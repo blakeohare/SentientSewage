@@ -1,3 +1,4 @@
+
 NEIGHBORS = [];
 for (dx = -3; dx <= 2; ++dx) {
 	for (dy = -3; dy <= 2; ++dy) {
@@ -9,7 +10,12 @@ for (dx = -3; dx <= 2; ++dx) {
 		value = 2.7182818 ** (-dist);
 		if (value > 1) value = 1;
 		if (value > .5) value = (value - .5) * .5 + .5;
-		NEIGHBORS.add([dx, dy, value * 1.42]);
+		
+		// directional vector
+		vx = dx + .5;
+		vy = dy + .5;
+		
+		NEIGHBORS.add([dx, dy, value * 1.42, [vx, vy]]);
 	}
 }
 
@@ -21,6 +27,7 @@ class FluidSurface {
 		this.action_height = [0.0] * (width * height);
 		this.action_cooldown = [0] * (width * height);
 		this.action_severity = [0] * (width * height);
+		this.action_vector = [0] * (width * height);
 		this.ripple = [0.0] * (width * height);
 		
 		this.active_tile_x = null;
@@ -46,6 +53,7 @@ class FluidSurface {
 						index = nx + ny * this.width;
 						this.action_severity[index] = neighbor[2];
 						this.action_cooldown[index] = 7;
+						this.action_vector[index] = neighbor[3];
 					}
 				}
 				
@@ -108,6 +116,56 @@ class FluidSurface {
 		}
 	}
 	
+	function get_action_vector_at(x, y) {
+		if (x < 0 || y < 0 || x >= this.width - 1 || y >= this.height - 1) return null;
+		
+		col = $floor(x);
+		row = $floor(y);
+		index = col + row * this.width;
+		
+		dx = 0.0;
+		dy = 0.0;
+		weight = 0;
+		for (index : [index, index + 1, index + this.width, index + this.width + 1]) {
+			if (this.action_cooldown[index] > 0) {
+				weight++;
+				dxdy = this.action_vector[index];
+				dx += dxdy[0];
+				dy += dxdy[1];
+			}
+		}
+		
+		if (weight > 0) {
+			return [dx / weight, dy / weight];
+		}
+		
+		return null;
+	}
+	
+	function get_action_severity_at(x, y) {
+		if (x < 0 || y < 0 || x >= this.width - 1 || y >= this.height - 1) return 0;
+		
+		col = $floor(x);
+		row = $floor(y);
+		index = col + row * this.width;
+		
+		total = 0.0;
+		weight = 0;
+		
+		for (index : [index, index + 1, index + this.width, index + this.width + 1]) {
+			if (this.action_cooldown[index] > 0) {
+				weight++;
+				total += this.action_severity[index];
+			}
+		}
+		
+		if (weight > 0) {
+			return total / weight;
+		}
+		
+		return 0;
+	}
+		
 	function get_z_at(x, y) {
 		width = this.width;
 		if (x < 0 || x >= this.width - 1 || y < 0 || y >= this.height - 1) {

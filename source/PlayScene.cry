@@ -26,7 +26,7 @@ class PlayScene : AbstractScene {
 				new_bricks.add(brick);
 			}
 		}
-		this.bricks = new_bricks;
+		this.active_bricks = new_bricks;
 		
 		if (this.counter % FPS * 5 == 0) {
 			this.active_bricks.add(new Brick());

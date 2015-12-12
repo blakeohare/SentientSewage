@@ -24,10 +24,19 @@ class Brick {
 		this.vz += GRAVITY;
 		
 		z = fluid.get_z_at(this.x, this.y);
-		if (this.x < 0 || this.y < 0 || this.x >= fluid.width || this.y >= fluid.height) {
+		if (this.x < 0 || this.y < 0 || this.x >= fluid.width - 1 || this.y >= fluid.height - 1) {
 			this.dead = true;
 		} else if (z > this.z) {
-			this.dead = true; // TODO: bounce if cooldown is positive
+			
+			vect = fluid.get_action_vector_at(this.x, this.y);
+			
+			if (vect != null) {
+				this.vx = vect[0];
+				this.vy = vect[1];
+				this.z += 1;
+				this.vz = fluid.get_action_severity_at(this.x, this.y);
+			}
+			this.dead = true;
 		}
 	}
 }
