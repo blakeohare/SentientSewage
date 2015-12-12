@@ -1,0 +1,42 @@
+FPS = 30;
+GAME_WIDTH = 640;
+GAME_HEIGHT = 480;
+
+import 'util.cry';
+
+import 'FluidSurface.cry';
+
+function main() {
+	$game_initialize(FPS);
+	$game_initialize_screen(GAME_WIDTH, GAME_HEIGHT);
+	$game_set_title("Sentient Sewage");
+	
+	clicks = [];
+	
+	fluid_surface = new FluidSurface(8, 8);
+	
+	render_counter = 0;
+	
+	while (true) {
+		
+		clicks.clear();
+		
+		for (event : $game_pump_events()) {
+			if (event.is_quit) {
+				return;
+			} else if (event.is_mouse && event.type == 'mouseleftdown') {
+				clicks.add([event.x, event.y]);
+			}
+		}
+		
+		$gfx_fill_screen(0, 0, 0);
+		fluid_surface.update_ripple(render_counter);
+		fluid_surface.render(render_counter, GAME_WIDTH / 2, 100);
+		
+		render_counter++;
+		
+		$game_clock_tick();
+	}
+}
+
+main();
