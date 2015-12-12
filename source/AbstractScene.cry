@@ -1,0 +1,17 @@
+class AbstractScene {
+	constructor() {
+		this._next = this;
+	}
+	
+	function switch_scene(scene) {
+		this._next = scene;
+	}
+	
+	function update(events) {
+		$assert(false, "Override me!");
+	}
+	
+	function render(rc) {
+		$assert(false, "Override me!");
+	}
+}

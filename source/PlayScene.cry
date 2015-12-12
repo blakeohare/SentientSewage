@@ -1,0 +1,25 @@
+TOP_ORIGIN = [GAME_WIDTH / 2, 100];
+
+class PlayScene : AbstractScene {
+	constructor() : base() {
+		this.fluid = new FluidSurface(9, 9);
+	}
+	
+	function update(events) {
+		origin_x = TOP_ORIGIN[0];
+		origin_y = TOP_ORIGIN[1];
+		for (event : events) {
+			x = event.x - origin_x;
+			y = event.y - origin_y;
+			col = (x + y) / 40.0;
+			row = (y - x) / 40.0;
+			this.fluid.set_active_tile($floor(col), $floor(row));
+		}
+	}
+	
+	function render(rc) {
+		this.fluid.update_ripple(rc);
+		this.fluid.render(rc, TOP_ORIGIN[0], TOP_ORIGIN[1]);
+		
+	}
+}
