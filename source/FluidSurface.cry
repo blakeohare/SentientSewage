@@ -230,7 +230,11 @@ class FluidSurface {
 				if (bricks != null) {
 					for (brick : bricks) {
 						bx = $floor(origin_x + (brick.x - brick.y) * 40);
-						by = $floor(origin_y + (brick.x + brick.y - brick.z) * 20);
+						by_base = origin_y + (brick.x + brick.y - brick.z) * 20;
+						by_shadow = $floor(by_base);
+						by = $floor(by_base - brick.z * 20);
+						
+						$gfx_draw_ellipse(bx - 5, $floor(by_base) - 2, 10, 5, 0, 0, 0, 190);
 						$gfx_draw_ellipse(bx - 5, by - 5, 10, 10, 255, 255, 255, 255);
 					}
 				}
