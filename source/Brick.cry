@@ -1,13 +1,13 @@
-GRAVITY = -.01;
+GRAVITY = -.025;
 
 class Brick {
 	constructor() {
 		this.x = 0.001;
 		this.y = 5.0;
-		this.z = 5.0;
-		this.vx = .3 * .1 * get_variance_ratio(.2);
-		this.vy = .3 * (get_variance_ratio(.2) - 1);
-		this.vz = .5 * get_variance_ratio(.1);
+		this.z = 2.0;
+		this.vx = 1.7 * .1 * get_variance_ratio(.2);
+		this.vy = .5 * (get_variance_ratio(.2) - 1);
+		this.vz = 0.4 * get_variance_ratio(.1);
 		
 		this.dead = false;
 	}
@@ -22,5 +22,12 @@ class Brick {
 		this.z += this.vz;
 		
 		this.vz += GRAVITY;
+		
+		z = fluid.get_z_at(this.x, this.y);
+		if (this.x < 0 || this.y < 0 || this.x >= fluid.width || this.y >= fluid.height) {
+			this.dead = true;
+		} else if (z > this.z) {
+			this.dead = true; // TODO: bounce if cooldown is positive
+		}
 	}
 }

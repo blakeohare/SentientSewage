@@ -108,6 +108,50 @@ class FluidSurface {
 		}
 	}
 	
+	function get_z_at(x, y) {
+		width = this.width;
+		if (x < 0 || x >= this.width - 1 || y < 0 || y >= this.height - 1) {
+			return this.level;
+		}
+		
+		col = $floor(x);
+		row = $floor(y);
+		
+		ux = x - col;
+		uy = y - row;
+		if (ux >= 1 || uy >= 1) {
+			$assert(false, "WAT? " + ux + ', ' + uy + ', ' + x + ', ' + y);
+		}
+		index = col + row * width;
+		values = [
+			this.action_height[index] + this.ripple[index],
+			this.action_height[index + width] + this.ripple[index + width],
+			this.action_height[index + 1] + this.ripple[index + width],
+			this.action_height[index + width + 1] + this.ripple[index + width + 1],
+		];
+		
+		distances = [
+			(ux ** 2 + uy ** 2) ** .5,
+			(ux ** 2 + (1 - uy) ** 2) ** .5,
+			((1 - ux) ** 2 + uy ** 2) ** .5,
+			((1 - ux) ** 2 + (1 - uy) ** 2) ** .5,
+		];
+		
+		total_value = 0.0;
+		total_weight = 0.0;
+		
+		for (i = 0; i < 4; ++i) {
+			dist = distances[i];
+			if (dist < .05) return values[i] + this.level;
+			if (dist > 1.0) continue;
+			weight = 1.0 / dist;
+			total_value += values[i] * weight;
+			total_weight += weight;
+		}
+		
+		return total_value / total_weight + this.level;
+	}
+	
 	function render(rc, origin_x, origin_y, active_bricks) {
 		height = this.height;
 		width = this.width;
@@ -230,11 +274,15 @@ class FluidSurface {
 				if (bricks != null) {
 					for (brick : bricks) {
 						bx = $floor(origin_x + (brick.x - brick.y) * 40);
-						by_base = origin_y + (brick.x + brick.y - brick.z) * 20;
-						by_shadow = $floor(by_base);
+						by_base = origin_y + (brick.x + brick.y) * 20 - 40;
+						by_shadow = $floor(by_base - 20 * (az + dz) / 2.0);
 						by = $floor(by_base - brick.z * 20);
 						
-						$gfx_draw_ellipse(bx - 5, $floor(by_base) - 2, 10, 5, 0, 0, 0, 190);
+						shadow_height = 6 * (dz - az + 40) / 40.0;
+						if (shadow_height > 0) {
+							$gfx_draw_ellipse(bx - 5, $floor(by_base - shadow_height / 2), 10, $floor(shadow_height), 0, 0, 0, 160);
+						}
+						
 						$gfx_draw_ellipse(bx - 5, by - 5, 10, 10, 255, 255, 255, 255);
 					}
 				}
