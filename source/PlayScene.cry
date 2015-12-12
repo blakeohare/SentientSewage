@@ -13,8 +13,10 @@ class PlayScene : AbstractScene {
 			y = event.y - origin_y - this.fluid.level * 40;
 			col = (x / 2.0 + y) / 40.0;
 			row = (y - x / 2.0) / 40.0;
-			this.fluid.set_active_tile($floor(col), $floor(row));
+			this.fluid.set_active_tile($floor(col), $floor(row), event.type == 'mouseleftdown');
 		}
+		
+		this.fluid.update();
 	}
 	
 	function render(rc) {

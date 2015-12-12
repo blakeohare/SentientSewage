@@ -1,25 +1,76 @@
+NEIGHBORS = [];
+for (dx = -3; dx <= 2; ++dx) {
+	for (dy = -3; dy <= 2; ++dy) {
+		mdx = dx;
+		mdy = dy;
+		if (mdx < 0) mdx += 1;
+		if (mdy < 0) mdy += 1;
+		dist = (mdx ** 2 + mdy ** 2) ** .5;
+		value = 2.7182818 ** (-dist);
+		if (value > 1) value = 1;
+		if (value > .5) value = (value - .5) * .5 + .5;
+		NEIGHBORS.add([dx, dy, value]);
+	}
+}
+
 class FluidSurface {
 	constructor(width, height) {
 		this.width = width;
 		this.height = height;
 		
-		this.ripple = make_grid(width, height, 0.0);
-		this.action_grid = make_grid(width, height, 0.0);
+		this.action_height = [0.0] * (width * height);
+		this.action_cooldown = [0] * (width * height);
+		this.action_severity = [0] * (width * height);
+		this.ripple = [0.0] * (width * height);
+		
 		this.active_tile_x = null;
 		this.active_tile_y = null;
 		
 		this.level = 1.0;
 	}
 	
-	function set_active_tile(x, y) {
+	function set_active_tile(x, y, is_click) {
 		x++;
 		y++;
 		if (x > 0 && x < this.width && y > 0 && y < this.height) {
 			this.active_tile_x = x;
 			this.active_tile_y = y;
+			
+			if (is_click) {
+				index = x + y * this.width;
+				
+				for (neighbor : NEIGHBORS) {
+					nx = neighbor[0] + x;
+					ny = neighbor[1] + y;
+					if (nx >= 0 && nx < this.width && ny >= 0 && ny < this.height) {
+						index = nx + ny * this.width;
+						this.action_severity[index] = neighbor[2];
+						this.action_cooldown[index] = 10;
+					}
+				}
+				
+				
+			}
 		} else {
 			this.active_tile_x = null;
 			this.active_tile_y = null;
+		}
+	}
+	
+	function update() {
+		action_cooldown = this.action_cooldown;
+		action_height = this.action_height;
+		for (i = this.width * this.height - 1; i >= 0; --i) {
+			if (action_cooldown[i] > 0) {
+				action_cooldown[i]--;
+				action_height[i] += this.action_severity[i];
+			} else {
+				if (action_height[i] > 0) {
+					value = action_height[i] * .9;
+					if (value < .1) value = 0;
+					action_height[i] = value;
+				}
+			}
 		}
 	}
 	
@@ -36,12 +87,13 @@ class FluidSurface {
 		pt3x = width * .63;
 		pt3y = height * .71;
 		
+		index = 0;
 		for (y = 0; y < height; ++y) {
 			for (x = 0; x < width; ++x) {
 				
 				dx = x - pt1x;
 				dy = y - pt1y;
-				func1 = $cos(.05 * rc + (dx ** 2 + dy ** 2) ** .5) * .1;
+				func1 = $cos(.1 * rc + (dx ** 2 + dy ** 2) ** .5) * .1;
 				
 				dx = x - pt2x;
 				dy = y - pt2y;
@@ -49,9 +101,9 @@ class FluidSurface {
 				
 				dx = x - pt3x;
 				dy = y - pt3y;
-				func3 = $cos(.05 * rc + (dx ** 2 + dy ** 2) ** .5) * .1;
+				func3 = $cos(.15 * rc + (dx ** 2 + dy ** 2) ** .5) * .1;
 				
-				ripple[x][y] = 2 * (func1 + func2 + func3);
+				ripple[index++] = 2 * (func1 + func2 + func3);
 			}
 		}
 	}
@@ -60,6 +112,7 @@ class FluidSurface {
 		height = this.height;
 		width = this.width;
 		ripple = this.ripple;
+		action_height = this.action_height;
 		/*
 			a
 		  b | c
@@ -67,16 +120,21 @@ class FluidSurface {
 		*/
 		
 		for (y = 1; y < height; ++y) {
+			index = 1 + y * width;
 			for (x = 1; x < width; ++x) {
 				az = this.level;
 				bz = this.level;
 				cz = this.level;
 				dz = this.level;
 				
-				az += ripple[x - 1][y - 1];
-				bz += ripple[x - 1][y];
-				cz += ripple[x][y - 1];
-				dz += ripple[x][y];
+				a_index = index - width - 1;
+				b_index = index - 1;
+				c_index = index - width;
+				
+				az += ripple[a_index] + action_height[a_index];
+				bz += ripple[b_index] + action_height[b_index];
+				cz += ripple[c_index] + action_height[c_index];
+				dz += ripple[index] + action_height[index];
 				
 				px = origin_x + (x - y) * 40;
 				py = origin_y + (x + y) * 20;
@@ -147,6 +205,8 @@ class FluidSurface {
 					px + 40, py - $floor(cz * 20) + 20,
 					px, py - $floor(dz * 20) + 40,
 					r2, g2, b2, 255);
+				
+				++index;
 			}
 		}
 	}
