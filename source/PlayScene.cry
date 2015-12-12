@@ -3,6 +3,8 @@ TOP_ORIGIN = [GAME_WIDTH / 2, 100];
 class PlayScene : AbstractScene {
 	constructor() : base() {
 		this.fluid = new FluidSurface(9, 9);
+		this.active_bricks = [];
+		this.counter = 0;
 	}
 	
 	function update(events) {
@@ -17,11 +19,24 @@ class PlayScene : AbstractScene {
 		}
 		
 		this.fluid.update();
+		new_bricks = [];
+		for (brick : this.active_bricks) {
+			brick.update(this.fluid);
+			if (!brick.dead) {
+				new_bricks.add(brick);
+			}
+		}
+		this.bricks = new_bricks;
+		
+		if (this.counter % FPS * 5 == 0) {
+			this.active_bricks.add(new Brick());
+		}
+		
+		this.counter++;
 	}
 	
 	function render(rc) {
 		this.fluid.update_ripple(rc);
-		this.fluid.render(rc, TOP_ORIGIN[0], TOP_ORIGIN[1]);
-		
+		this.fluid.render(rc, TOP_ORIGIN[0], TOP_ORIGIN[1], this.active_bricks);
 	}
 }

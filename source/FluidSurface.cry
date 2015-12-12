@@ -9,7 +9,7 @@ for (dx = -3; dx <= 2; ++dx) {
 		value = 2.7182818 ** (-dist);
 		if (value > 1) value = 1;
 		if (value > .5) value = (value - .5) * .5 + .5;
-		NEIGHBORS.add([dx, dy, value]);
+		NEIGHBORS.add([dx, dy, value * 1.42]);
 	}
 }
 
@@ -45,7 +45,7 @@ class FluidSurface {
 					if (nx >= 0 && nx < this.width && ny >= 0 && ny < this.height) {
 						index = nx + ny * this.width;
 						this.action_severity[index] = neighbor[2];
-						this.action_cooldown[index] = 10;
+						this.action_cooldown[index] = 7;
 					}
 				}
 				
@@ -108,7 +108,7 @@ class FluidSurface {
 		}
 	}
 	
-	function render(rc, origin_x, origin_y) {
+	function render(rc, origin_x, origin_y, active_bricks) {
 		height = this.height;
 		width = this.width;
 		ripple = this.ripple;
@@ -118,6 +118,26 @@ class FluidSurface {
 		  b | c
 		    d(PT)
 		*/
+		
+		brick_cells = {}; // index -> list of bricks
+		
+		for (brick : active_bricks) {
+			if (!brick.dead) {
+				col = $floor(brick.x);
+				row = $floor(brick.y);
+				if (col < 0 || row < 0 || col >= this.width || row >= this.height) {
+					brick.dead = true;
+				} else {
+					index = col + row * this.width;
+					brick_list = brick_cells.get(index, null);
+					if (brick_list == null) {
+						brick_list = [];
+						brick_cells[index] = brick_list;
+					}
+					brick_list.add(brick);
+				}
+			}
+		}
 		
 		for (y = 1; y < height; ++y) {
 			index = 1 + y * width;
@@ -205,6 +225,15 @@ class FluidSurface {
 					px + 40, py - $floor(cz * 20) + 20,
 					px, py - $floor(dz * 20) + 40,
 					r2, g2, b2, 255);
+				
+				bricks = brick_cells.get(index, null);
+				if (bricks != null) {
+					for (brick : bricks) {
+						bx = $floor(origin_x + (brick.x - brick.y) * 40);
+						by = $floor(origin_y + (brick.x + brick.y - brick.z) * 20);
+						$gfx_draw_ellipse(bx - 5, by - 5, 10, 10, 255, 255, 255, 255);
+					}
+				}
 				
 				++index;
 			}

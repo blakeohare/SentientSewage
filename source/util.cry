@@ -6,3 +6,7 @@ function make_grid(width, height, default_value = null) {
 	}
 	return output;
 }
+
+function get_variance_ratio(amount) {
+	return 1.0 + ($random() * 2 - 1) * amount;
+}
