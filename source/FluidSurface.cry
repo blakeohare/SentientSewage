@@ -370,7 +370,11 @@ class FluidSurface {
 				if (col < 0 || row < 0 || col >= this.width || row >= this.height) {
 					brick.dead = true;
 				} else {
-					index = col + row * this.width;
+					tcol = col;
+					trow = row;
+					if (tcol == 0) tcol = 1;
+					if (trow == 0) trow = 1;
+					index = tcol + trow * this.width;
 					brick_list = brick_cells.get(index, null);
 					if (brick_list == null) {
 						brick_list = [];
@@ -386,7 +390,7 @@ class FluidSurface {
 		for (y = 1; y < height; ++y) {
 			index = 1 + y * width;
 			for (x = 1; x < width; ++x) {
-				
+			
 				a_index = index - width - 1;
 				b_index = index - 1;
 				c_index = index - width;
@@ -466,6 +470,7 @@ class FluidSurface {
 					px + 40, py - $floor(cz * 20) + 20,
 					px, py - $floor(dz * 20) + 40,
 					r2, g2, b2, 160);
+			
 				
 				bricks = brick_cells.get(index, null);
 				if (bricks != null) {
