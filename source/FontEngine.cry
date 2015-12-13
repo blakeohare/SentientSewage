@@ -1,0 +1,28 @@
+class FontEngine {
+	constructor() {
+		data = $resource_read_text('images/font/lookup.txt').trim().replace('\r\n', '\n').replace('\r', '\n').split('\n');
+		this.raw_file_info = {};
+		for (row : data) {
+			char = row[0];
+			file = row[1:];
+			this.raw_file_info[char] = file + '.png';
+		}
+		
+		this.images = null;
+	}
+	
+	function render(text, x, y, location) {
+		if (this.images == null) {
+			this.initialize();
+		}
+		
+		// TODO: this
+	}
+	
+	function initialize() {
+		this.images = {};
+		// TODO: this
+	}
+}
+
+FONT = new FontEngine();

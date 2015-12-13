@@ -11,7 +11,9 @@ import 'AbstractScene.cry';
 
 import 'Brick.cry';
 import 'FluidSurface.cry';
+import 'FontEngine.cry';
 import 'PlayScene.cry';
+import 'WinLoseScene.cry';
 
 function main() {
 	$game_initialize(FPS);
