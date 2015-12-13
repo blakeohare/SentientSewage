@@ -27,7 +27,7 @@ class FluidSurface {
 		this.action_height = [0.0] * (width * height);
 		this.action_cooldown = [0] * (width * height);
 		this.action_severity = [0] * (width * height);
-		this.action_vector = [0] * (width * height);
+		this.action_vector = [[0, 0]] * (width * height);
 		this.ripple = [0.0] * (width * height);
 		
 		this.active_tile_x = null;
@@ -69,7 +69,6 @@ class FluidSurface {
 		action_height = this.action_height;
 		for (i = this.width * this.height - 1; i >= 0; --i) {
 			if (action_cooldown[i] > 0) {
-				action_cooldown[i]--;
 				action_height[i] += this.action_severity[i];
 			} else {
 				if (action_height[i] > 0) {
@@ -78,6 +77,7 @@ class FluidSurface {
 					action_height[i] = value;
 				}
 			}
+			action_cooldown[i]--;
 		}
 	}
 	
@@ -126,7 +126,7 @@ class FluidSurface {
 		dy = 0.0;
 		weight = 0;
 		for (index : [index, index + 1, index + this.width, index + this.width + 1]) {
-			if (this.action_cooldown[index] > 0) {
+			if (this.action_cooldown[index] > -3) {
 				weight++;
 				dxdy = this.action_vector[index];
 				dx += dxdy[0];
