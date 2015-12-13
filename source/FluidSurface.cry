@@ -182,10 +182,10 @@ class FluidSurface {
 		}
 		index = col + row * width;
 		values = [
-			this.action_height[index] + this.ripple[index],
-			this.action_height[index + width] + this.ripple[index + width],
-			this.action_height[index + 1] + this.ripple[index + width],
-			this.action_height[index + width + 1] + this.ripple[index + width + 1],
+			this.action_height[index] + this.ripple[index] + this.level,
+			this.action_height[index + width] + this.ripple[index + width] + this.level,
+			this.action_height[index + 1] + this.ripple[index + width] + this.level,
+			this.action_height[index + width + 1] + this.ripple[index + width + 1] + this.level,
 		];
 		
 		distances = [
@@ -200,14 +200,14 @@ class FluidSurface {
 		
 		for (i = 0; i < 4; ++i) {
 			dist = distances[i];
-			if (dist < .05) return values[i] + this.level;
+			if (dist < .05) return values[i];
 			if (dist > 1.0) continue;
 			weight = 1.0 / dist;
 			total_value += values[i] * weight;
 			total_weight += weight;
 		}
 		
-		return total_value / total_weight + this.level;
+		return total_value / total_weight;
 	}
 	
 	function render(rc, origin_x, origin_y, active_bricks) {
@@ -264,9 +264,10 @@ class FluidSurface {
 				py = origin_y + (x + y) * 20;
 				
 				if (x == this.active_tile_x && y == this.active_tile_y) {
-					r = 200;
+					v = $abs((rc * 17) % 300 - 150);
+					r = v;
 					g = 0;
-					b = 0;
+					b = 100 + v;
 				} else {
 					r = 0;
 					g = 100;

@@ -37,7 +37,7 @@ class Brick {
 				this.vx = vect[0] / 10.0;
 				this.vy = vect[1] / 10.0;
 				this.z = z + 1;
-				sev = fluid.get_action_severity_at(this.x, this.y) / 5.0;
+				sev = fluid.get_action_severity_at(this.x, this.y) / 2;
 				this.vz = sev;
 			} else {
 				this.dead = true;
