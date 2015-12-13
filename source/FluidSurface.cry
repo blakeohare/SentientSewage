@@ -301,7 +301,24 @@ class FluidSurface {
 		inner_right_d = inner_base_c;
 		this.draw_quad(inner_right_a, inner_right_b, inner_right_c, inner_right_d, [100, 100, 100]);
 		
-		
+		/*
+			A
+			BC
+			 D
+		*/
+		exterior_left_a = inner_left_a;
+		exterior_left_b = inner_left_c;
+		exterior_left_c = this.to_screen_coordinate(tile_width, tile_height, max_height, origin_x, origin_y);
+		exterior_left_d = inner_base_d;
+		/*
+			 C
+			AD
+			B
+		*/
+		exterior_right_a = exterior_left_c;
+		exterior_right_b = exterior_left_d;
+		exterior_right_c = inner_right_c;
+		exterior_right_d = inner_right_d;
 		
 		ripple = this.ripple;
 		action_height = this.action_height;
@@ -454,5 +471,8 @@ class FluidSurface {
 				$floor(height),
 				0, 0, 0, 160);
 		}
+		
+		this.draw_quad(exterior_left_a, exterior_left_b, exterior_left_c, exterior_left_d, [100, 255, 255, 80]);
+		this.draw_quad(exterior_right_a, exterior_right_b, exterior_right_c, exterior_right_d, [100, 255, 255, 80]);
 	}
 }
