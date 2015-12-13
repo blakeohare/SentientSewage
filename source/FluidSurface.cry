@@ -435,13 +435,13 @@ class FluidSurface {
 					px, py - $floor(az * 20),
 					px - 40, py - $floor(bz * 20) + 20,
 					px, py - $floor(dz * 20) + 40,
-					r1, g1, b1, 255);
+					r1, g1, b1, 160);
 					
 				$gfx_draw_triangle(
 					px, py - $floor(az * 20),
 					px + 40, py - $floor(cz * 20) + 20,
 					px, py - $floor(dz * 20) + 40,
-					r2, g2, b2, 255);
+					r2, g2, b2, 160);
 				
 				bricks = brick_cells.get(index, null);
 				if (bricks != null) {
