@@ -322,6 +322,13 @@ class FluidSurface {
 		exterior_right_c = inner_right_c;
 		exterior_right_d = inner_right_d;
 		
+		for (level = 1; level < max_height; ++level) {
+			a = this.to_screen_coordinate(tile_width - 1, 0, level, origin_x, origin_y);
+			b = this.to_screen_coordinate(tile_width, 0, level, origin_x, origin_y);
+			$gfx_draw_line(a[0], a[1], b[0], b[1], 3, 200, 180, 120, 255);
+		}
+		
+		
 		ripple = this.ripple;
 		action_height = this.action_height;
 		/*
