@@ -48,8 +48,19 @@ class PlayScene : AbstractScene {
 		}
 		this.active_bricks = new_bricks;
 		
-		if (this.counter % FPS * 5 == 0) {
-			this.active_bricks.add(new Brick());
+		if (this.counter % FPS * 10 == 0) {
+			x = 0.001;
+			y = $random() * (this.fluid.height - 4) + 1.5;
+			if ($random() < .5) {
+				t = x;
+				x = y;
+				y = t;
+			}
+			
+			target_x = $random() * (this.fluid.width - 4) + 1.5;
+			target_y = $random() * (this.fluid.height - 4) + 1.5;
+			
+			this.active_bricks.add(new Brick(x, y, this.fluid.max_level + 1, target_x, target_y, this.fluid.level));
 		}
 		
 		this.counter++;

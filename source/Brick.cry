@@ -1,13 +1,21 @@
 GRAVITY = -.025;
 
 class Brick {
-	constructor() {
-		this.x = 0.001;
-		this.y = 5.0;
-		this.z = 2.0;
-		this.vx = .1 * get_variance_ratio(.2);
-		this.vy = .5 * (get_variance_ratio(.2) - 1);
-		this.vz = 0.4 * get_variance_ratio(.1);
+	constructor(start_x, start_y, start_z, target_x, target_y, water_surface_z) {
+		this.x = start_x;
+		this.y = start_y;
+		this.z = start_z;
+		
+		// z = z_start + v0 * t + a * t^2 / 2
+		// t = 2 seconds = FPS * 2
+		// water_surface_z = start_z + ??? * t + GRAVITY * t * t / 2
+		
+		t = FPS * 2.0;
+		
+		this.vz = (water_surface_z - start_z - GRAVITY * t ** 2 / 2.0) / t;
+		
+		this.vx = (target_x - this.x) / t;
+		this.vy = (target_y - this.y) / t;
 		
 		this.dead = false;
 	}
