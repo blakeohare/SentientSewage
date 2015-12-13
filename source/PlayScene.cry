@@ -6,6 +6,7 @@ class PlayScene : AbstractScene {
 		this.active_bricks = [];
 		this.counter = 0;
 		this.last_click = -9999;
+		this.last_click_coords = null;
 	}
 	
 	function update(events) {
@@ -20,10 +21,14 @@ class PlayScene : AbstractScene {
 			ignore = false;
 			if (is_click) {
 				if (col >= 0 && row >= 0 && col < this.fluid.width && row < this.fluid.height) {
-					if (this.counter - this.last_click < FPS / 3) {
+					delay = this.counter - this.last_click;
+					if (delay < FPS / 3) {
+						ignore = true;
+					} else if (delay < FPS * 2 / 3 && this.last_click_coords == col * 1000 + row) {
 						ignore = true;
 					} else {
 						this.last_click = this.counter;
+						this.last_click_coords = col * 1000 + row;
 					}
 				}
 			}
