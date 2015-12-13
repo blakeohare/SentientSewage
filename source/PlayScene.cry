@@ -8,6 +8,30 @@ class PlayScene : AbstractScene {
 		this.counter = 0;
 		this.last_click = -9999;
 		this.last_click_coords = null;
+		
+		switch (difficulty) {
+			case 'easy':
+				intervals = FPS * 3;
+				velocity = 1.2;
+				break;
+			case 'medium':
+				intervals = FPS * 2;
+				velocity = 1.7;
+				break;
+			case 'hard':
+				intervals = FPS * 1;
+				velocity = 2.3;
+				break;
+			case 'insane':
+				intervals = FPS / 2;
+				velocity = 3.14159;
+				break;
+			default:
+				$assert(false, '?');
+				break;
+		}
+		this.interval = intervals;
+		this.velocity = velocity;
 	}
 	
 	function update(events) {
@@ -67,7 +91,7 @@ class PlayScene : AbstractScene {
 			this.switch_scene(new WinLoseScene(this, true));
 		}
 		
-		if (this.counter % FPS * 10 == 0) {
+		if ((this.counter + 1) % this.interval == 0) {
 			x = 0.001;
 			y = $random() * (this.fluid.height - 4) + 1.5;
 			if ($random() < .5) {
@@ -79,7 +103,7 @@ class PlayScene : AbstractScene {
 			target_x = $random() * (this.fluid.width - 4) + 1.5;
 			target_y = $random() * (this.fluid.height - 4) + 1.5;
 			
-			this.active_bricks.add(new Brick(x, y, this.fluid.max_level + 1, target_x, target_y, this.fluid.level));
+			this.active_bricks.add(new Brick(x, y, this.fluid.max_level + 1, target_x, target_y, this.fluid.level, this.velocity));
 		}
 		
 		this.counter++;

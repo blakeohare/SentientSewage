@@ -1,7 +1,7 @@
 GRAVITY = -.025;
 
 class Brick {
-	constructor(start_x, start_y, start_z, target_x, target_y, water_surface_z) {
+	constructor(start_x, start_y, start_z, target_x, target_y, water_surface_z, velocity_ratio) {
 		this.x = start_x;
 		this.y = start_y;
 		this.z = start_z;
@@ -10,7 +10,7 @@ class Brick {
 		// t = 2 seconds = FPS * 2
 		// water_surface_z = start_z + ??? * t + GRAVITY * t * t / 2
 		
-		t = FPS * 2.0;
+		t = FPS * 2.0 / velocity_ratio;
 		
 		this.vz = (water_surface_z - start_z - GRAVITY * t ** 2 / 2.0) / t;
 		
