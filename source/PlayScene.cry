@@ -1,4 +1,4 @@
-TOP_ORIGIN = [GAME_WIDTH / 2, 100];
+TOP_ORIGIN = [GAME_WIDTH / 2, 2 * GAME_HEIGHT / 5];
 
 class PlayScene : AbstractScene {
 	constructor() : base() {

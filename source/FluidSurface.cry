@@ -226,7 +226,10 @@ class FluidSurface {
 		height = this.height;
 		width = this.width;
 		
-		max_height = 3;
+		tile_width = this.width - 1;
+		tile_height = this.height - 1;
+		
+		max_height = 6;
 		
 		// tank top
 		/*
@@ -235,9 +238,9 @@ class FluidSurface {
 			 D
 		*/
 		top_a = this.to_screen_coordinate(-1, -1, max_height, origin_x, origin_y);
-		top_b = this.to_screen_coordinate(-1, this.height, max_height, origin_x, origin_y);
-		top_c = this.to_screen_coordinate(this.width, -1, max_height, origin_x, origin_y);
-		top_d = this.to_screen_coordinate(this.width, this.height, max_height, origin_x, origin_y);
+		top_b = this.to_screen_coordinate(-1, tile_height, max_height, origin_x, origin_y);
+		top_c = this.to_screen_coordinate(tile_width, -1, max_height, origin_x, origin_y);
+		top_d = this.to_screen_coordinate(tile_width, tile_height, max_height, origin_x, origin_y);
 		this.draw_quad(top_a, top_b, top_c, top_d, [128, 128, 128]);
 		
 		// tank left
@@ -247,9 +250,9 @@ class FluidSurface {
 			  D
 		*/
 		left_a = top_b;
-		left_b = this.to_screen_coordinate(-1, this.height, -1, origin_x, origin_y);
+		left_b = this.to_screen_coordinate(-1, tile_height, -1, origin_x, origin_y);
 		left_c = top_d;
-		left_d = this.to_screen_coordinate(this.width, this.height, -1, origin_x, origin_y);
+		left_d = this.to_screen_coordinate(tile_width, tile_height, -1, origin_x, origin_y);
 		this.draw_quad(left_a, left_b, left_c, left_d, [100, 100, 100]);
 		
 		// tank right
@@ -262,7 +265,7 @@ class FluidSurface {
 		right_a = top_d;
 		right_b = left_d;
 		right_c = top_c;
-		right_d = this.to_screen_coordinate(this.width, -1, -1, origin_x, origin_y);
+		right_d = this.to_screen_coordinate(tile_width, -1, -1, origin_x, origin_y);
 		this.draw_quad(right_a, right_b, right_c, right_d, [70, 70, 70]);
 		 
 		// Water base
@@ -272,9 +275,9 @@ class FluidSurface {
 			 D
 		*/
 		inner_base_a = this.to_screen_coordinate(0, 0, 0, origin_x, origin_y);
-		inner_base_b = this.to_screen_coordinate(0, this.height, 0, origin_x, origin_y);
-		inner_base_c = this.to_screen_coordinate(this.width, 0, 0, origin_x, origin_y);
-		inner_base_d = this.to_screen_coordinate(this.width, this.height, 0, origin_x, origin_y);
+		inner_base_b = this.to_screen_coordinate(0, tile_height, 0, origin_x, origin_y);
+		inner_base_c = this.to_screen_coordinate(tile_width, 0, 0, origin_x, origin_y);
+		inner_base_d = this.to_screen_coordinate(tile_width, tile_height, 0, origin_x, origin_y);
 		this.draw_quad(inner_base_a, inner_base_b, inner_base_c, inner_base_d, [0, 0, 128]);
 		
 		/*
@@ -282,7 +285,7 @@ class FluidSurface {
 			AD
 			C
 		*/
-		inner_left_a = this.to_screen_coordinate(0, this.height, max_height, origin_x, origin_y);
+		inner_left_a = this.to_screen_coordinate(0, tile_height, max_height, origin_x, origin_y);
 		inner_left_b = this.to_screen_coordinate(0, 0, max_height, origin_x, origin_y);
 		inner_left_c = inner_base_b;
 		inner_left_d = inner_base_a;
@@ -294,7 +297,7 @@ class FluidSurface {
 		*/
 		inner_right_a = inner_left_b;
 		inner_right_b = inner_left_d;
-		inner_right_c = this.to_screen_coordinate(this.width, 0, max_height, origin_x, origin_y);
+		inner_right_c = this.to_screen_coordinate(tile_width, 0, max_height, origin_x, origin_y);
 		inner_right_d = inner_base_c;
 		this.draw_quad(inner_right_a, inner_right_b, inner_right_c, inner_right_d, [100, 100, 100]);
 		
@@ -329,26 +332,22 @@ class FluidSurface {
 		}
 		
 		deferred_shadows = [];
-		
+		//$print(this.level);
 		for (y = 1; y < height; ++y) {
 			index = 1 + y * width;
 			for (x = 1; x < width; ++x) {
-				az = this.level;
-				bz = this.level;
-				cz = this.level;
-				dz = this.level;
 				
 				a_index = index - width - 1;
 				b_index = index - 1;
 				c_index = index - width;
 				
-				az += ripple[a_index] + action_height[a_index];
-				bz += ripple[b_index] + action_height[b_index];
-				cz += ripple[c_index] + action_height[c_index];
-				dz += ripple[index] + action_height[index];
+				az = ripple[a_index] + action_height[a_index] + this.level;
+				bz = ripple[b_index] + action_height[b_index] + this.level;
+				cz = ripple[c_index] + action_height[c_index] + this.level;
+				dz = ripple[index] + action_height[index] + this.level;
 				
 				px = origin_x + (x - y) * 40;
-				py = origin_y + (x + y) * 20;
+				py = origin_y + (x + y) * 20 - 40; // -40 because coordinate A is in the tile behind the current index.
 				
 				if (x == this.active_tile_x && y == this.active_tile_y) {
 					v = $abs((rc * 17) % 300 - 150);
