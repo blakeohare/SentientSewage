@@ -40,13 +40,32 @@ class PlayScene : AbstractScene {
 		
 		this.fluid.update();
 		new_bricks = [];
+		bricks_hit = 0;
+		
 		for (brick : this.active_bricks) {
 			brick.update(this.fluid);
-			if (!brick.dead) {
+			if (brick.dead) {
+				if (brick.hit_water) {
+					bricks_hit++;
+				}
+			} else {
 				new_bricks.add(brick);
 			}
 		}
 		this.active_bricks = new_bricks;
+		
+		this.fluid.level -= bricks_hit * .2;
+		if (this.fluid.level < .3) {
+			// TODO: YOU LOSE!
+			$print('lose');
+		}
+		
+		this.fluid.level += .1 / FPS; // water level goes up .1 per second
+		
+		if (this.fluid.level >= this.fluid.max_level) {
+			// TODO: YOU WIN!
+			$print('win');
+		}
 		
 		if (this.counter % FPS * 10 == 0) {
 			x = 0.001;
