@@ -92,6 +92,33 @@ class LoadingScene : AbstractScene {
 			$floor(blue[1] * progress + green[1] * antiprogress),
 			$floor(blue[2] * progress + green[2] * antiprogress),
 		];
-		$gfx_draw_rectangle(left, bottom - sludge_height, width, sludge_height, rgb[0], rgb[1], rgb[2], 200);
+		
+		x = left;
+		ratios = [.2, .4, .6, 1, .6, .4, .2];
+		widths = [.1, .1, .1, .4, .1, .1, .1];
+		for (i = 0; i <= 6; ++i) {
+			w = $floor(width * widths[i]);
+			r = rgb[0];
+			g = rgb[1];
+			b = rgb[2];
+			if (i > 3) {
+				r = 255 - r;
+				g = 255 - g;
+				b = 255 - b;
+			}
+			
+			ratio = ratios[i];
+			r = $floor(r * ratio);
+			g = $floor(g * ratio);
+			b = $floor(b * ratio);
+		
+			if (i > 3) {
+				r = 255 - r;
+				g = 255 - g;
+				b = 255 - b;
+			}
+			$gfx_draw_rectangle(x, bottom - sludge_height, w, sludge_height, r, g, b, 200);
+			x += w;
+		}
 	}
 }
