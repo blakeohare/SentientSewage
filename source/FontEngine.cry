@@ -9,9 +9,11 @@ class FontEngine {
 		}
 		lookup = this.images[size];
 		img = null;
+		space = lookup['o'].width;
+		
 		for (char : text) {
 			if (char == ' ') {
-				x += 7;
+				x += space;
 			} else {
 				img = lookup.get(char, null);
 				if (img == null) {
