@@ -5,6 +5,7 @@ class PlayScene : AbstractScene {
 		this.fluid = new FluidSurface(9, 9);
 		this.active_bricks = [];
 		this.counter = 0;
+		this.last_click = -9999;
 	}
 	
 	function update(events) {
@@ -15,7 +16,21 @@ class PlayScene : AbstractScene {
 			y = event.y - origin_y - this.fluid.level * 40;
 			col = (x / 2.0 + y) / 40.0;
 			row = (y - x / 2.0) / 40.0;
-			this.fluid.set_active_tile($floor(col), $floor(row), event.type == 'mouseleftdown');
+			is_click = event.type == 'mouseleftdown';
+			ignore = false;
+			if (is_click) {
+				if (col >= 0 && row >= 0 && col < this.fluid.width && row < this.fluid.height) {
+					if (this.counter - this.last_click < FPS / 3) {
+						ignore = true;
+					} else {
+						this.last_click = this.counter;
+					}
+				}
+			}
+			
+			if (!ignore) {
+				this.fluid.set_active_tile($floor(col), $floor(row), is_click);
+			}
 		}
 		
 		this.fluid.update();
