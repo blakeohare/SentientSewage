@@ -102,7 +102,7 @@ class PlayScene : AbstractScene {
 		this.active_bricks = new_bricks;
 		
 		this.fluid.level -= bricks_hit * .2;
-		if (this.fluid.level < .3) {
+		if (this.fluid.level < 1) {
 			this.switch_scene(new WinLoseScene(this, false));
 		}
 		

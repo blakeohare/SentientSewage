@@ -33,7 +33,7 @@ class FluidSurface {
 		this.active_tile_x = null;
 		this.active_tile_y = null;
 		
-		this.level = 4.0;
+		this.level = 2.0;
 		this.max_level = 6;
 	}
 	
