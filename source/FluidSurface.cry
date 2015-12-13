@@ -56,8 +56,6 @@ class FluidSurface {
 						this.action_vector[index] = neighbor[3];
 					}
 				}
-				
-				
 			}
 		} else {
 			this.active_tile_x = null;
@@ -210,9 +208,98 @@ class FluidSurface {
 		return total_value / total_weight;
 	}
 	
+	function to_screen_coordinate(x, y, z, origin_x, origin_y) {
+		return [
+			$floor(origin_x + (x - y) * 40),
+			$floor(origin_y + (x + y - z) * 20)
+		];
+	}
+	
+	function draw_quad(a, b, c, d, rgb) {
+		alpha = rgb.length == 3 ? 255 : rgb[3];
+		$gfx_draw_triangle(a[0], a[1], b[0], b[1], d[0], d[1], rgb[0], rgb[1], rgb[2], alpha);
+		$gfx_draw_triangle(a[0], a[1], c[0], c[1], d[0], d[1], rgb[0], rgb[1], rgb[2], alpha);
+	}
+	
 	function render(rc, origin_x, origin_y, active_bricks) {
+		
 		height = this.height;
 		width = this.width;
+		
+		max_height = 3;
+		
+		// tank top
+		/*
+			 A
+			B C
+			 D
+		*/
+		top_a = this.to_screen_coordinate(-1, -1, max_height, origin_x, origin_y);
+		top_b = this.to_screen_coordinate(-1, this.height, max_height, origin_x, origin_y);
+		top_c = this.to_screen_coordinate(this.width, -1, max_height, origin_x, origin_y);
+		top_d = this.to_screen_coordinate(this.width, this.height, max_height, origin_x, origin_y);
+		this.draw_quad(top_a, top_b, top_c, top_d, [128, 128, 128]);
+		
+		// tank left
+		/*
+			A
+			B C
+			  D
+		*/
+		left_a = top_b;
+		left_b = this.to_screen_coordinate(-1, this.height, -1, origin_x, origin_y);
+		left_c = top_d;
+		left_d = this.to_screen_coordinate(this.width, this.height, -1, origin_x, origin_y);
+		this.draw_quad(left_a, left_b, left_c, left_d, [100, 100, 100]);
+		
+		// tank right
+		
+		/*
+			  C
+			A D
+			B
+		*/
+		right_a = top_d;
+		right_b = left_d;
+		right_c = top_c;
+		right_d = this.to_screen_coordinate(this.width, -1, -1, origin_x, origin_y);
+		this.draw_quad(right_a, right_b, right_c, right_d, [70, 70, 70]);
+		 
+		// Water base
+		/*
+			 A
+			B C
+			 D
+		*/
+		inner_base_a = this.to_screen_coordinate(0, 0, 0, origin_x, origin_y);
+		inner_base_b = this.to_screen_coordinate(0, this.height, 0, origin_x, origin_y);
+		inner_base_c = this.to_screen_coordinate(this.width, 0, 0, origin_x, origin_y);
+		inner_base_d = this.to_screen_coordinate(this.width, this.height, 0, origin_x, origin_y);
+		this.draw_quad(inner_base_a, inner_base_b, inner_base_c, inner_base_d, [0, 0, 128]);
+		
+		/*
+			 B
+			AD
+			C
+		*/
+		inner_left_a = this.to_screen_coordinate(0, this.height, max_height, origin_x, origin_y);
+		inner_left_b = this.to_screen_coordinate(0, 0, max_height, origin_x, origin_y);
+		inner_left_c = inner_base_b;
+		inner_left_d = inner_base_a;
+		this.draw_quad(inner_left_a, inner_left_b, inner_left_c, inner_left_d, [60, 60, 60]);
+		/*
+			A
+			BC
+			 D
+		*/
+		inner_right_a = inner_left_b;
+		inner_right_b = inner_left_d;
+		inner_right_c = this.to_screen_coordinate(this.width, 0, max_height, origin_x, origin_y);
+		inner_right_d = inner_base_c;
+		this.draw_quad(inner_right_a, inner_right_b, inner_right_c, inner_right_d, [100, 100, 100]);
+		
+		
+		
 		ripple = this.ripple;
 		action_height = this.action_height;
 		/*
