@@ -14,7 +14,7 @@ class PlayScene : AbstractScene {
 		origin_y = TOP_ORIGIN[1];
 		for (event : events) {
 			x = event.x - origin_x;
-			y = event.y - origin_y - this.fluid.level * 40 + 20;
+			y = event.y - origin_y + this.fluid.level * 20;
 			col = (x / 2.0 + y) / 40.0;
 			row = (y - x / 2.0) / 40.0;
 			is_click = event.type == 'mouseleftdown';
