@@ -32,7 +32,7 @@ class Brick {
 		this.carl_countdown--;
 	}
 	
-	function update(fluid) {
+	function update(fluid, scene) {
 		if (this.carl_countdown > 0) return; // carl is holding it. don't move yet.
 		
 		old_x = this.x;
@@ -69,6 +69,7 @@ class Brick {
 			} else {
 				this.dead = true;
 				this.hit_water = true;
+				scene.halt_counter = 30;
 			}
 		}
 		

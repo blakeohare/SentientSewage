@@ -38,9 +38,13 @@ class PlayScene : AbstractScene {
 		this.interval = intervals;
 		this.velocity = velocity;
 		this.decay = decay;
+		
+		this.halt_counter = -1; // counts down. If positive, don't grow. When chlorine lands in vat, set to 30.
 	}
 	
 	function update(events) {
+		this.halt_counter--;
+		
 		origin_x = TOP_ORIGIN[0];
 		origin_y = TOP_ORIGIN[1];
 		for (event : events) {
@@ -90,7 +94,7 @@ class PlayScene : AbstractScene {
 		this.carls = new_carls;
 		
 		for (brick : this.active_bricks) {
-			brick.update(this.fluid);
+			brick.update(this.fluid, this);
 			if (brick.dead) {
 				if (brick.hit_water) {
 					bricks_hit++;
@@ -106,7 +110,9 @@ class PlayScene : AbstractScene {
 			this.switch_scene(new WinLoseScene(this, false));
 		}
 		
-		this.fluid.level += .1 / FPS; // water level goes up .1 per second
+		if (this.halt_counter < 0) {
+			this.fluid.level += .1 / FPS; // water level goes up .1 per second
+		}
 		
 		if (this.fluid.level >= this.fluid.max_level) {
 			SAVE_STATE.unlock(get_next_difficulty(this.difficulty));
@@ -132,7 +138,11 @@ class PlayScene : AbstractScene {
 	}
 	
 	function render(rc) {
+		redness = this.halt_counter / 30.0;
+		if (redness < 0) redness = 0;
+		if (redness > 1) redness = 1;
+		
 		this.fluid.update_ripple(rc);
-		this.fluid.render(rc, TOP_ORIGIN[0], TOP_ORIGIN[1], this.active_bricks, this.carls);
+		this.fluid.render(rc, TOP_ORIGIN[0], TOP_ORIGIN[1], this.active_bricks, this.carls, redness);
 	}
 }

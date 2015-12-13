@@ -222,7 +222,9 @@ class FluidSurface {
 		$gfx_draw_triangle(a[0], a[1], c[0], c[1], d[0], d[1], rgb[0], rgb[1], rgb[2], alpha);
 	}
 	
-	function render(rc, origin_x, origin_y, active_bricks, carls) {
+	function render(rc, origin_x, origin_y, active_bricks, carls, redness) {
+		
+		this.redness = redness;
 		
 		height = this.height;
 		width = this.width;
@@ -525,21 +527,33 @@ class FluidSurface {
 	}
 	
 	function get_current_color() {
+		
 		blue = [0, 100, 255];
 		green = [70, 200, 20];
-		if (this.level < 1) return blue;
-		progress = 1.0 * (this.level - 1) / (this.max_level - 1);
-		if (progress > 1) progress = 1.0;
-		ratio = progress;
-		antiratio = 1 - ratio;
-		r = $floor(green[0] * ratio + blue[0] * antiratio);
-		g = $floor(green[1] * ratio + blue[1] * antiratio);
-		b = $floor(green[2] * ratio + blue[2] * antiratio);
+		if (this.level < 1) {
+			color = blue;
+		} else {
+			progress = 1.0 * (this.level - 1) / (this.max_level - 1);
+			if (progress > 1) progress = 1.0;
+			ratio = progress;
+			antiratio = 1 - ratio;
+			r = $floor(green[0] * ratio + blue[0] * antiratio);
+			g = $floor(green[1] * ratio + blue[1] * antiratio);
+			b = $floor(green[2] * ratio + blue[2] * antiratio);
+			
+			if (r > 255) r = 255;
+			if (g > 255) g = 255;
+			if (b > 255) b = 255;
+			
+			color = [r, g, b];
+		}
 		
-		if (r > 255) r = 255;
-		if (g > 255) g = 255;
-		if (b > 255) b = 255;
-		
+		if (this.redness == 0) return color;
+		ratio = this.redness * .7;
+		antiratio = 1.0 - ratio;
+		r = $floor(color[0] * antiratio + 255 * ratio);
+		g = $floor(color[1] * antiratio);
+		b = $floor(color[2] * antiratio + 80 * ratio);
 		return [r, g, b];
 	}
 }
