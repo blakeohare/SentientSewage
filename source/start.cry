@@ -8,6 +8,7 @@ import 'util.cry';
 import 'Object.cry';
 
 import 'AbstractScene.cry';
+import 'ImageLibrary.cry';
 
 import 'Brick.cry';
 import 'FadeTransitionScene.cry';
