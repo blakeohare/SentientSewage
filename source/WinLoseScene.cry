@@ -2,6 +2,8 @@
 class WinLoseScene : AbstractScene {
 	constructor(bg, is_win) : base() {
 		this.bg = bg;
+		difficulty = bg.difficulty;
+		
 		this.is_win = is_win;
 		this.counter = 0;
 	}

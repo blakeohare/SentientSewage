@@ -16,6 +16,7 @@ import 'FluidSurface.cry';
 import 'FontEngine.cry';
 import 'LoadingScene.cry';
 import 'PlayScene.cry';
+import 'SaveState.cry';
 import 'TitleScene.cry';
 import 'WinLoseScene.cry';
 

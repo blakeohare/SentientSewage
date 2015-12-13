@@ -1,0 +1,43 @@
+CONFIG_FILE = 'sentientsewage/data.txt';
+
+class SaveState {
+	constructor() {
+		this.levels_unlocked = null;
+	}
+	
+	function is_level_unlocked(difficulty) {
+		if (difficulty == 'easy') return true;
+		
+		if (this.levels_unlocked == null) {
+			this.levels_unlocked = {};
+			if ($user_data_path_exists(CONFIG_FILE)) {
+				data = $user_data_file_read_text(CONFIG_FILE).trim().lower();
+				for (item : data.split('|')) {
+					this.levels_unlocked[item.trim().lower()] = true;
+				}
+			}
+		}
+		return this.levels_unlocked.get(difficulty, false) == true;
+	}
+	
+	function unlock(difficulty) {
+		if (!this.is_level_unlocked(difficulty)) {
+			this.levels_unlocked[difficulty] = true;
+			this._save_data();
+		}
+	}
+	
+	function _save_data() {
+		output = [];
+		for (diff : ['medium', 'hard', 'insane']) {
+			if (this.is_level_unlocked(diff)) {
+				output.add(diff);
+			}
+		}
+		if (output.length > 0) {
+			$user_data_file_write_text(CONFIG_FILE, output.join('|'));
+		}
+	}
+}
+
+SAVE_STATE = new SaveState();

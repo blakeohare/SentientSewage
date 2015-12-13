@@ -1,23 +1,6 @@
-CONFIG_FILE = 'sentientsewage/data.txt';
 
 class TitleScene : AbstractScene {
 	constructor() : base() {
-		this.medium_unlocked = false;
-		this.hard_unlocked = false;
-		this.insane_unlocked = false;
-		if ($user_data_path_exists(CONFIG_FILE)) {
-			data = $user_data_file_read_text(CONFIG_FILE).trim().lower();
-			if (data == 'medium') {
-				this.medium_unlocked = true;
-			} else if (data == 'hard') {
-				this.medium_unlocked = true;
-				this.hard_unlocked = true;
-			} else if (data == 'insane') {
-				this.medium_unlocked = true;
-				this.hard_unlocked = true;
-				this.insane_unlocked = true;
-			}
-		}
 		this.bounds = null;
 		this.active_hover = null;
 		this.my_rc = 0;
@@ -62,7 +45,9 @@ class TitleScene : AbstractScene {
 							case 'medium':
 							case 'hard':
 							case 'insane':
-								$print(this.active_hover);
+								if (SAVE_STATE.is_level_unlocked(this.active_hover)) {
+									this.switch_scene(new FadeTransitionScene(this, new PlayScene(this.active_hover)));
+								}
 								break;
 							case 'crayon':
 								$launch_browser('http://crayonlang.org');
@@ -108,27 +93,25 @@ class TitleScene : AbstractScene {
 		y = GAME_HEIGHT / 2;
 		for (i = 1; i < 5; ++i) {
 			x = GAME_WIDTH * i / 5;
-			img = IMAGES.get(images[i - 1] + '.png');
+			difficulty = images[i - 1];
+			img = IMAGES.get(difficulty + '.png');
 			if (i == 1) {
 				x -= 30;
 			}
 			$gfx_blit_image(img, x - img.width / 2, y - img.height / 2);
 			
 			if (record_bounds) {
-				bounds[images[i - 1]] = [x - 90, y - 100, x + 90, y + 100];
+				bounds[difficulty] = [x - 90, y - 100, x + 90, y + 100];
 			}
 			
-			available = i == 1 ||
-				(i == 2 && this.medium_unlocked) ||
-				(i == 3 && this.hard_unlocked) ||
-				(i == 4 && this.insane_unlocked);
+			available = SAVE_STATE.is_level_unlocked(difficulty);
 			
 			if (!available) {
 				$gfx_draw_rectangle(x - 90, y - 100, 180, 200, 180, 180, 180, 200);
 				$gfx_blit_image(lock, x - lock.width / 2, y - lock.height / 2);
 			}
 			
-			FONT.render(titles[i - 1], x - 50, y + 60 + this.get_bounce(images[i - 1]), 'M');
+			FONT.render(titles[i - 1], x - 50, y + 60 + this.get_bounce(difficulty), 'M');
 		}
 		
 		base_y = GAME_HEIGHT * 4 / 5;

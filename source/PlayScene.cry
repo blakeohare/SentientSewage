@@ -1,7 +1,8 @@
 TOP_ORIGIN = [GAME_WIDTH / 2, 2 * GAME_HEIGHT / 5];
 
 class PlayScene : AbstractScene {
-	constructor() : base() {
+	constructor(difficulty) : base() {
+		this.difficulty = difficulty;
 		this.fluid = new FluidSurface(9, 9);
 		this.active_bricks = [];
 		this.counter = 0;
@@ -62,6 +63,7 @@ class PlayScene : AbstractScene {
 		this.fluid.level += .1 / FPS; // water level goes up .1 per second
 		
 		if (this.fluid.level >= this.fluid.max_level) {
+			SAVE_STATE.unlock(get_next_difficulty(this.difficulty));
 			this.switch_scene(new WinLoseScene(this, true));
 		}
 		
