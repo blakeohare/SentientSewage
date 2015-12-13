@@ -20,6 +20,7 @@ class TitleScene : AbstractScene {
 		}
 		this.bounds = null;
 		this.active_hover = null;
+		this.my_rc = 0;
 	}
 	
 	function hit_test(x, y) {
@@ -37,10 +38,18 @@ class TitleScene : AbstractScene {
 		for (event : events) {
 			switch (event.type) {
 				case 'mousemove':
+					old = this.active_hover;
 					this.active_hover = this.hit_test(event.x, event.y);
+					if (this.active_hover != old) {
+						this.my_rc = 0;
+					}
 					break;
 				case 'mouseleftdown':
+					old = this.active_hover;
 					this.active_hover = this.hit_test(event.x, event.y);
+					if (this.active_hover != old) {
+						this.my_rc = 0;
+					}
 					if (this.active_hover != null) {
 						switch (this.active_hover) {
 							case 'intro':
@@ -55,6 +64,9 @@ class TitleScene : AbstractScene {
 							case 'insane':
 								$print(this.active_hover);
 								break;
+							case 'crayon':
+								$launch_browser('http://crayonlang.org');
+								break;
 							default:
 								break;
 						}
@@ -62,6 +74,12 @@ class TitleScene : AbstractScene {
 					break;
 			}
 		}
+	}
+	
+	function get_bounce(item) {
+		if (item == this.active_hover && this.bounds != null)
+			return -$floor(8 * $abs($sin(this.my_rc * TWO_PI / FPS)));
+		return 0;
 	}
 	
 	function render(rc) {
@@ -110,22 +128,28 @@ class TitleScene : AbstractScene {
 				$gfx_blit_image(lock, x - lock.width / 2, y - lock.height / 2);
 			}
 			
-			FONT.render(titles[i - 1], x - 50, y + 60, 'M');
+			FONT.render(titles[i - 1], x - 50, y + 60 + this.get_bounce(images[i - 1]), 'M');
 		}
 		
-		
-		y = GAME_HEIGHT * 4 / 5;
+		base_y = GAME_HEIGHT * 4 / 5;
+		y = base_y + this.get_bounce('intro');
 		x = GAME_WIDTH / 4 - 40;
-		
 		xy = FONT.render('Introduction', x, y, 'L');
 		if (record_bounds) bounds['intro'] = [x, y, xy[0], xy[1]];
 		
 		x = 3 * GAME_WIDTH / 4 - 40;
+		y = base_y + this.get_bounce('about');
 		xy = FONT.render('About', x, y, 'L');
 		if (record_bounds) bounds['about'] = [x, y, xy[0], xy[1]];
+		
+		x = GAME_WIDTH - 140;
+		y = GAME_HEIGHT - 20 + this.get_bounce('crayon') / 2;
+		xy = FONT.render("Written in Crayon!", x, y, 'S');
+		if (record_bounds) bounds['crayon'] = [x, y, xy[0], xy[1]];
 		
 		if (record_bounds) {
 			this.bounds = bounds;
 		}
+		this.my_rc++;
 	}
 }
