@@ -13,18 +13,22 @@ class PlayScene : AbstractScene {
 			case 'easy':
 				intervals = FPS * 3;
 				velocity = 1.2;
+				decay = 1.0;
 				break;
 			case 'medium':
 				intervals = FPS * 2;
 				velocity = 1.7;
+				decay = 1.1;
 				break;
 			case 'hard':
 				intervals = FPS * 1;
-				velocity = 2.3;
+				velocity = 2.0;
+				decay = 1.25;
 				break;
 			case 'insane':
 				intervals = FPS / 2;
-				velocity = 3.14159;
+				velocity = 2.0;
+				decay = 1.4;
 				break;
 			default:
 				$assert(false, '?');
@@ -32,6 +36,7 @@ class PlayScene : AbstractScene {
 		}
 		this.interval = intervals;
 		this.velocity = velocity;
+		this.decay = decay;
 	}
 	
 	function update(events) {
@@ -59,7 +64,7 @@ class PlayScene : AbstractScene {
 			}
 			
 			if (!ignore) {
-				this.fluid.set_active_tile($floor(col), $floor(row), is_click);
+				this.fluid.set_active_tile($floor(col), $floor(row), is_click, this.decay);
 			}
 		}
 		

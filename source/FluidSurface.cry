@@ -37,7 +37,7 @@ class FluidSurface {
 		this.max_level = 6;
 	}
 	
-	function set_active_tile(x, y, is_click) {
+	function set_active_tile(x, y, is_click, decay_ratio) {
 		x++;
 		y++;
 		if (x > 0 && x < this.width && y > 0 && y < this.height) {
@@ -52,8 +52,8 @@ class FluidSurface {
 					ny = neighbor[1] + y;
 					if (nx >= 0 && nx < this.width && ny >= 0 && ny < this.height) {
 						index = nx + ny * this.width;
-						this.action_severity[index] = neighbor[2];
-						this.action_cooldown[index] = 7;
+						this.action_severity[index] = neighbor[2] * decay_ratio;
+						this.action_cooldown[index] = $floor(7 / decay_ratio);
 						this.action_vector[index] = neighbor[3];
 					}
 				}
