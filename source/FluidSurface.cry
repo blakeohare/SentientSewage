@@ -222,7 +222,7 @@ class FluidSurface {
 		$gfx_draw_triangle(a[0], a[1], c[0], c[1], d[0], d[1], rgb[0], rgb[1], rgb[2], alpha);
 	}
 	
-	function render(rc, origin_x, origin_y, active_bricks) {
+	function render(rc, origin_x, origin_y, active_bricks, carls) {
 		
 		height = this.height;
 		width = this.width;
@@ -321,6 +321,30 @@ class FluidSurface {
 		exterior_right_b = exterior_left_d;
 		exterior_right_c = inner_right_c;
 		exterior_right_d = inner_right_d;
+		
+		// carls
+		for (carl : carls) {
+			x = carl.carl_x;
+			y = carl.carl_y;
+			if (x > y) {
+				y -= .5;
+				reversed = true;
+			} else {
+				x -= .5;
+				reversed = false;
+			}
+			
+			xy = this.to_screen_coordinate(x, y, max_height, origin_x, origin_y);
+			path = carl.carl_countdown > 0 ? 'carl1.png' : 'carl2.png';
+			img = reversed
+				? IMAGES.get_reverse(path)
+				: IMAGES.get(path);
+			
+			$gfx_blit_image(img, xy[0] - img.width / 2, xy[1] - img.height);
+			// TODO: draw chlorine
+		}
+		
+		
 		
 		for (level = 1; level < max_height; ++level) {
 			a = this.to_screen_coordinate(tile_width - 1, 0, level, origin_x, origin_y);

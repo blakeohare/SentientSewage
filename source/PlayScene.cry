@@ -5,6 +5,7 @@ class PlayScene : AbstractScene {
 		this.difficulty = difficulty;
 		this.fluid = new FluidSurface(9, 9);
 		this.active_bricks = [];
+		this.carls = [];
 		this.counter = 0;
 		this.last_click = -9999;
 		this.last_click_coords = null;
@@ -72,6 +73,22 @@ class PlayScene : AbstractScene {
 		new_bricks = [];
 		bricks_hit = 0;
 		
+		new_carls = [];
+		for (carl : this.carls) {
+			carl.carl_update();
+			remove = false;
+			if (carl.carl_countdown == 0) {
+				this.active_bricks.add(carl);
+			} else if (carl.carl_countdown < -15) {
+				remove = true;
+			}
+			
+			if (!remove) {
+				new_carls.add(carl);
+			}
+		}
+		this.carls = new_carls;
+		
 		for (brick : this.active_bricks) {
 			brick.update(this.fluid);
 			if (brick.dead) {
@@ -108,7 +125,7 @@ class PlayScene : AbstractScene {
 			target_x = $random() * (this.fluid.width - 4) + 1.5;
 			target_y = $random() * (this.fluid.height - 4) + 1.5;
 			
-			this.active_bricks.add(new Brick(x, y, this.fluid.max_level + 1, target_x, target_y, this.fluid.level, this.velocity));
+			this.carls.add(new Brick(x, y, this.fluid.max_level + 1, target_x, target_y, this.fluid.level, this.velocity));
 		}
 		
 		this.counter++;
@@ -116,6 +133,6 @@ class PlayScene : AbstractScene {
 	
 	function render(rc) {
 		this.fluid.update_ripple(rc);
-		this.fluid.render(rc, TOP_ORIGIN[0], TOP_ORIGIN[1], this.active_bricks);
+		this.fluid.render(rc, TOP_ORIGIN[0], TOP_ORIGIN[1], this.active_bricks, this.carls);
 	}
 }

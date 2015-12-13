@@ -2,6 +2,7 @@ class ImageLibrary {
 	constructor() {
 		this.images = {};
 		this.images_by_scale = {};
+		this.reversed = {};
 	}
 	
 	function get(path) {
@@ -9,6 +10,16 @@ class ImageLibrary {
 		if (img == null) {
 			img = this.get_by_scale(path, 1);
 			this.images[path] = img;
+		}
+		return img;
+	}
+	
+	function get_reverse(path) {
+		img = this.reversed.get(path, null);
+		if (img == null) {
+			img = this.get(path);
+			img = $gfx_flip_image(img, true, false);
+			this.reversed[path] = img;
 		}
 		return img;
 	}
