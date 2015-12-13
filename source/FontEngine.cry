@@ -8,7 +8,7 @@ class FontEngine {
 			this.initialize();
 		}
 		lookup = this.images[size];
-		
+		img = null;
 		for (char : text) {
 			if (char == ' ') {
 				x += 7;
@@ -22,6 +22,9 @@ class FontEngine {
 				x += img.width + 1;
 			}
 		}
+		
+		height = img == null ? 0 : img.height;
+		return [x, y + height];
 	}
 	
 	function initialize() {
@@ -37,7 +40,7 @@ class FontEngine {
 			'S': 1,
 			'M': 2,
 			'L': 3,
-			'XL': 4,
+			'XL': 6,
 		};
 		for (tshirt : sizes.keys()) {
 			scale = sizes[tshirt];

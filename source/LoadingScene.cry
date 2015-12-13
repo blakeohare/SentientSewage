@@ -47,7 +47,7 @@ class LoadingScene : AbstractScene {
 				break;
 			case LoadingPhase.DONE:
 				this.progress = 1.0;
-				this.switch_scene(new FadeTransitionScene(this, new PlayScene())); // TODO: title scene
+				this.switch_scene(new FadeTransitionScene(this, new TitleScene())); // TODO: title scene
 				break;
 			default:
 				break;
@@ -88,9 +88,9 @@ class LoadingScene : AbstractScene {
 		sludge_height = $floor(progress * height);
 		antiprogress = 1 - progress;
 		rgb = [
-			$floor(blue[0] * progress + green[0] * antiprogress),
-			$floor(blue[1] * progress + green[1] * antiprogress),
-			$floor(blue[2] * progress + green[2] * antiprogress),
+			$floor(blue[0] * antiprogress + green[0] * progress),
+			$floor(blue[1] * antiprogress + green[1] * progress),
+			$floor(blue[2] * antiprogress + green[2] * progress),
 		];
 		
 		x = left;

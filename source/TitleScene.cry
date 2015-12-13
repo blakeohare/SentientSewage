@@ -1,0 +1,131 @@
+CONFIG_FILE = 'sentientsewage/data.txt';
+
+class TitleScene : AbstractScene {
+	constructor() : base() {
+		this.medium_unlocked = false;
+		this.hard_unlocked = false;
+		this.insane_unlocked = false;
+		if ($user_data_path_exists(CONFIG_FILE)) {
+			data = $user_data_file_read_text(CONFIG_FILE).trim().lower();
+			if (data == 'medium') {
+				this.medium_unlocked = true;
+			} else if (data == 'hard') {
+				this.medium_unlocked = true;
+				this.hard_unlocked = true;
+			} else if (data == 'insane') {
+				this.medium_unlocked = true;
+				this.hard_unlocked = true;
+				this.insane_unlocked = true;
+			}
+		}
+		this.bounds = null;
+		this.active_hover = null;
+	}
+	
+	function hit_test(x, y) {
+		if (this.bounds == null) return null;
+		for (item : this.bounds.keys()) {
+			bounds = this.bounds[item];
+			if (x > bounds[0] && x < bounds[2] && y > bounds[1] && y < bounds[3]) {
+				return item;
+			}
+		}
+		return null;
+	}
+	
+	function update(events) {
+		for (event : events) {
+			switch (event.type) {
+				case 'mousemove':
+					this.active_hover = this.hit_test(event.x, event.y);
+					break;
+				case 'mouseleftdown':
+					this.active_hover = this.hit_test(event.x, event.y);
+					if (this.active_hover != null) {
+						switch (this.active_hover) {
+							case 'intro':
+								$print('intro');
+								break;
+							case 'about':
+								$print('about');
+								break;
+							case 'easy':
+							case 'medium':
+							case 'hard':
+							case 'insane':
+								$print(this.active_hover);
+								break;
+							default:
+								break;
+						}
+					}
+					break;
+			}
+		}
+	}
+	
+	function render(rc) {
+	
+		record_bounds = this.bounds == null;
+		bounds = {};
+		
+		FONT.render('SENTIENT SEWAGE', 100, 20, 'XL');
+		
+		images = [
+			'easy',
+			'medium',
+			'hard',
+			'insane'
+		];
+		
+		titles = [
+			'Easy',
+			'Medium',
+			'Hard',
+			'Insane',
+		];
+		
+		lock = IMAGES.get('locked.png');
+		
+		y = GAME_HEIGHT / 2;
+		for (i = 1; i < 5; ++i) {
+			x = GAME_WIDTH * i / 5;
+			img = IMAGES.get(images[i - 1] + '.png');
+			if (i == 1) {
+				x -= 30;
+			}
+			$gfx_blit_image(img, x - img.width / 2, y - img.height / 2);
+			
+			if (record_bounds) {
+				bounds[images[i - 1]] = [x - 90, y - 100, x + 90, y + 100];
+			}
+			
+			available = i == 1 ||
+				(i == 2 && this.medium_unlocked) ||
+				(i == 3 && this.hard_unlocked) ||
+				(i == 4 && this.insane_unlocked);
+			
+			if (!available) {
+				$gfx_draw_rectangle(x - 90, y - 100, 180, 200, 180, 180, 180, 200);
+				$gfx_blit_image(lock, x - lock.width / 2, y - lock.height / 2);
+			}
+			
+			FONT.render(titles[i - 1], x - 50, y + 60, 'M');
+		}
+		
+		
+		y = GAME_HEIGHT * 4 / 5;
+		x = GAME_WIDTH / 4 - 40;
+		
+		xy = FONT.render('Introduction', x, y, 'L');
+		if (record_bounds) bounds['intro'] = [x, y, xy[0], xy[1]];
+		
+		x = 3 * GAME_WIDTH / 4 - 40;
+		xy = FONT.render('About', x, y, 'L');
+		if (record_bounds) bounds['about'] = [x, y, xy[0], xy[1]];
+		
+		if (record_bounds) {
+			this.bounds = bounds;
+		}
+	}
+}

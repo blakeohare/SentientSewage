@@ -483,6 +483,16 @@ class FluidSurface {
 		
 		this.draw_quad(exterior_left_a, exterior_left_b, exterior_left_c, exterior_left_d, [160, 255, 255, 80]);
 		this.draw_quad(exterior_right_a, exterior_right_b, exterior_right_c, exterior_right_d, [100, 255, 255, 80]);
+		
+		xy = this.to_screen_coordinate(this.width - 1, 0, this.level, origin_x, origin_y);
+		x = xy[0] + 8;
+		y = xy[1];
+		$gfx_draw_line(x, y, x + 20, y, 1, 255, 255, 255, 255);
+		depth = $floor(this.level * 100) / 100.0 + '';
+		while (depth.length < 4) {
+			depth += '0';
+		}
+		FONT.render(depth + 'm', x + 24, y - 6, 'S');
 	}
 	
 	function get_current_color() {

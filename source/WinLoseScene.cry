@@ -3,13 +3,29 @@ class WinLoseScene : AbstractScene {
 	constructor(bg, is_win) : base() {
 		this.bg = bg;
 		this.is_win = is_win;
+		this.counter = 0;
 	}
 	
 	function update(events) {
-	
+		this.counter++;
+		if (this.counter > FPS / 2) {
+			for (event : events) {
+				if (event.type == 'mouseleftdown') {
+					this.switch_scene(new TitleScene());
+				}
+			}
+		}
 	}
 	
 	function render(rc) {
 		this.bg.render(rc);
+		
+		if (this.is_win) {
+			$gfx_draw_rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 100, 200, 70, 150);
+			FONT.render("YOU WIN!", GAME_WIDTH / 2 - 100, GAME_HEIGHT * 2 / 5, 'XL');
+		} else {
+			$gfx_draw_rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0, 80, 255, 150);
+			FONT.render("YOU LOSE!", GAME_WIDTH / 2 - 100, GAME_HEIGHT * 2 / 5, 'XL');
+		}
 	}
 }
