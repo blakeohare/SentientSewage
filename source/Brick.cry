@@ -19,6 +19,7 @@ class Brick {
 		
 		this.dead = false;
 		this.hit_water = false;
+		this.immunity_countdown = -1;
 	}
 	
 	function update(fluid) {
@@ -29,6 +30,8 @@ class Brick {
 		this.x += this.vx;
 		this.y += this.vy;
 		this.z += this.vz;
+		
+		this.immunity_countdown--;
 		
 		this.vz += GRAVITY;
 		
@@ -48,6 +51,9 @@ class Brick {
 				this.z = z + 1;
 				sev = fluid.get_action_severity_at(this.x, this.y) / 2;
 				this.vz = sev;
+				this.immunity_countdown = 5;
+			} else if (this.immunity_countdown > 0) {
+				this.z = z + 1;
 			} else {
 				this.dead = true;
 				this.hit_water = true;
