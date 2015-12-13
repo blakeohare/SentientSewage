@@ -241,6 +241,8 @@ class FluidSurface {
 			}
 		}
 		
+		deferred_shadows = [];
+		
 		for (y = 1; y < height; ++y) {
 			index = 1 + y * width;
 			for (x = 1; x < width; ++x) {
@@ -331,22 +333,39 @@ class FluidSurface {
 				bricks = brick_cells.get(index, null);
 				if (bricks != null) {
 					for (brick : bricks) {
-						bx = $floor(origin_x + (brick.x - brick.y) * 40);
-						by_base = origin_y + (brick.x + brick.y) * 20 - 40;
-						by_shadow = $floor(by_base - 20 * (az + dz) / 2.0);
-						by = $floor(by_base - brick.z * 20);
-						
+						bx = origin_x + (brick.x - brick.y) * 40;
+						water_z = this.get_z_at(brick.x, brick.y);
+						by_shadow = origin_y + (brick.x + brick.y) * 20 - water_z * 20;
+						by = origin_y + (brick.x + brick.y - brick.z) * 20;
 						shadow_height = 6 * (dz - az + 40) / 40.0;
 						if (shadow_height > 0) {
-							$gfx_draw_ellipse(bx - 5, $floor(by_base - shadow_height / 2), 10, $floor(shadow_height), 0, 0, 0, 160);
+							deferred_shadows.add([bx, by_shadow, shadow_height]);
 						}
 						
-						$gfx_draw_ellipse(bx - 5, by - 5, 10, 10, 255, 255, 255, 255);
+						$gfx_draw_ellipse(
+							$floor(bx) - 5,
+							$floor(by) - 5,
+							10,
+							10, 
+							255, 255, 255, 255);
 					}
 				}
 				
 				++index;
 			}
+		}
+		
+		for (deferred_shadow : deferred_shadows) {
+			x = deferred_shadow[0];
+			y = deferred_shadow[1];
+			height = deferred_shadow[2];
+			width = 10;
+			$gfx_draw_ellipse(
+				$floor(x - width / 2),
+				$floor(y - height / 2),
+				width,
+				$floor(height),
+				0, 0, 0, 160);
 		}
 	}
 }
