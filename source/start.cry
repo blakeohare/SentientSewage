@@ -10,8 +10,10 @@ import 'Object.cry';
 import 'AbstractScene.cry';
 
 import 'Brick.cry';
+import 'FadeTransitionScene.cry';
 import 'FluidSurface.cry';
 import 'FontEngine.cry';
+import 'LoadingScene.cry';
 import 'PlayScene.cry';
 import 'WinLoseScene.cry';
 
@@ -24,7 +26,7 @@ function main() {
 	
 	fluid_surface = new FluidSurface(8, 8);
 	
-	active_scene = new PlayScene(); // TODO: title scene
+	active_scene = new LoadingScene();
 	
 	render_counter = 0;
 	
@@ -52,6 +54,12 @@ function main() {
 		active_scene.render(render_counter);
 		
 		render_counter++;
+		
+		if (active_scene._next != null) {
+			old = active_scene;
+			active_scene = active_scene._next;
+			old._next = null;
+		}
 		
 		$game_clock_tick();
 	}

@@ -1,0 +1,42 @@
+class FadeTransitionScene : AbstractScene {
+	constructor(prev, next) : base() {
+		this.prev = prev;
+		this.next = next;
+		this.bg = prev;
+		this.counter = 0;
+		this.max = FPS;
+		this.progress = 0;
+	}
+	
+	function update(events) {
+		if (this.progress < .5) {
+			this.bg = this.prev;
+		} else {
+			this.bg = this.next;
+		}
+		
+		this.counter++;
+		this.progress = 1.0 * this.counter / this.max;
+		
+		if (this.progress > 1) {
+			this.progress = 1.0;
+			this.switch_scene(this.next);
+		}
+	}
+	
+	function render(rc) {
+		this.bg.render(rc);
+		if (this.progress < .5) {
+			progress = this.progress * 2;
+		} else {
+			progress = this.progress - .5;
+			progress = 1.0 - progress;
+		}
+		
+		opacity = $floor(255 * progress);
+		if (opacity > 255) opacity = 255;
+		else if (opacity < 0) opacity = 0;
+		
+		$gfx_draw_rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0, 0, 0, opacity);
+	}
+}

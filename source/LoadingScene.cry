@@ -1,0 +1,97 @@
+enum LoadingPhase {
+	START,
+	FAKE_PAD_START,
+	LOADING,
+	FAKE_PAD_END,
+	DONE,
+}
+
+class LoadingScene : AbstractScene {
+	constructor() : base() {
+		this.counter = 0;
+		this.phase_counter = 0;
+		this.progress = 0.0;
+		this.phase = LoadingPhase.START;
+		this.last_progress = 0.0;
+	}
+	
+	function update(events) {
+		switch (this.phase) {
+			case LoadingPhase.START:
+				this.phase = LoadingPhase.FAKE_PAD_START;
+				this.phase_counter = -1;
+				$gfx_image_sheet_load('everything');
+				break;
+			case LoadingPhase.FAKE_PAD_START:
+				this.progress = this.phase_counter / 100.0;
+				if (this.phase_counter == 20) {
+					this.phase = LoadingPhase.LOADING;
+					this.phase_counter = -1;
+				}
+				break;
+			case LoadingPhase.LOADING:
+				if ($gfx_image_sheet_loaded('everything')) {
+					this.progress = 1.0;
+					this.phase = LoadingPhase.FAKE_PAD_END;
+					this.phase_counter = -1;
+				} else {
+					this.progress = $gfx_image_sheet_load_progress('everything') * .6 + .2;
+				}
+				break;
+			case LoadingPhase.FAKE_PAD_END:
+				this.progress = .8 + this.phase_counter / 100.0;
+				if (this.phase_counter == 20) {
+					this.phase = LoadingPhase.DONE;
+					this.phase_counter = -1;
+				}
+				break;
+			case LoadingPhase.DONE:
+				this.progress = 1.0;
+				this.switch_scene(new FadeTransitionScene(this, new PlayScene())); // TODO: title scene
+				break;
+			default:
+				break;
+		}
+		if (this.progress > 1) this.progress = 1.0;
+		if (this.progress < 0) this.progress = 0.0;
+		
+		if (this.progress - this.last_progress > .1) {
+			this.last_progress = this.last_progress + .1;
+		} else {
+			this.last_progress = this.progress;
+		}
+		
+		this.phase_counter++;
+		this.counter++;
+	}
+	
+	function render(rc) {
+		width = 60;
+		left = GAME_WIDTH / 2 - width / 2;
+		right = left + width;
+		top = GAME_HEIGHT / 8;
+		bottom = GAME_HEIGHT * 7 / 8;
+		height = bottom - top;
+		
+		$gfx_draw_rectangle(left - 8, top - 8, width + 16, height + 16, 128, 128, 128, 255);
+		
+		for (i = 0; i <= 20; ++i) {
+			y = top + $floor(height * i / 20.0);
+			w = i % 2 == 0 ? (width / 2) : (width / 4);
+			$gfx_draw_rectangle(right - w, y, w, 2, 200, 180, 120, 255);
+		}
+		
+		blue = [0, 100, 255];
+		green = [100, 200, 50];
+		
+		progress = this.last_progress;
+		sludge_height = $floor(progress * height);
+		antiprogress = 1 - progress;
+		rgb = [
+			$floor(blue[0] * progress + green[0] * antiprogress),
+			$floor(blue[1] * progress + green[1] * antiprogress),
+			$floor(blue[2] * progress + green[2] * antiprogress),
+		];
+		$gfx_draw_rectangle(left, bottom - sludge_height, width, sludge_height, rgb[0], rgb[1], rgb[2], 200);
+	}
+}
