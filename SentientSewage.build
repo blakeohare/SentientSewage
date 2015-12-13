@@ -15,7 +15,12 @@
   
   <target name="js_noisyprotozoa">
     <platform>js</platform>
-    <jsfileprefix>/demos/SentientSewage/</jsfileprefix>
+    <jsfileprefix>/demos/sentientsewage/</jsfileprefix>
+  </target>
+  
+  <target name="js_twocans">
+	<platform>js</platform>
+	<jsfileprefix>/projects/sentientsewage/</jsfileprefix>
   </target>
   
   <target name="windows">
