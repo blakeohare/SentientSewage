@@ -1,4 +1,4 @@
-CONFIG_FILE = 'sentientsewage/data.txt';
+CONFIG_FILE = 'sentientsewage_data.txt';
 
 class SaveState {
 	constructor() {
