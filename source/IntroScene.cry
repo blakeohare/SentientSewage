@@ -8,12 +8,16 @@ class IntroScene : AbstractScene {
 			[null, 'VAT+BIGCARL+BRICK', [
 				"His job is to throw blocks of chlorine", 
 				"into the vat to make it safe to drink."]],
-			[null, 'VAT+BIGCARL+BRICK', ["Because that's how water treatment works.", "in my head."]],
+			[null, 'VAT+BIGCARL+BRICK', ["Because that's how water treatment", "works in my head."]],
 			[null, 'VAT+BIGCARL+BRICK', ["He should really get a pair of gloves."]],
 			[null, 'VAT+BIGCARL+BRICK', ["Anywho..."]],
 			['throw_demo', 'VAT', []],
 			['demo_over', 'VAT', ["If chlorine falls in, you shrink."]],
-			[null, 'VAT', ["You can stop this by tapping the water", "surface to extend your WATERY PSEUDOPOD", "to deflect the chlorine blocks."]],
+			[null, 'VAT', [
+				"You can stop this by tapping the ", 
+				"water surface to extend your",
+				"WATERY PSEUDOPOD to deflect the ",
+				"chlorine blocks."]],
 			['deflect_demo', 'VAT', []],
 			[null, 'VAT', ["If you shrink below 1 meter, you ", "lose consciousness."]],
 			[null, 'VAT', ["That's bad."]],
@@ -22,11 +26,12 @@ class IntroScene : AbstractScene {
 			[null, 'VAT', ["If you manage to grow to 6 meters, you", "can LEAK TO FREEDOM!"]],
 			[null, 'VAT+BIGCARL+BRICK', ["Don't worry about Carl though."]],
 			[null, 'VAT+BIGCARL+BRICK', [
-				"  He can use this to justify a budget increase", 
-				"  which he was planning on spending on a ", 
-				"  foosball table in the breakroom since", 
-				"  he actually lives one town over and has no", 
-				"  vested interest in the local water quality."]],
+				"  He can use this to justify a budget", 
+				"  increase which he was planning on",
+				"  spending on a foosball table in the",
+				"  breakroom since he actually lives one",
+				"  town over and has no vested interest", 
+				"  in the local water quality."]],
 			[null, 'VAT+BIGCARL+BRICK', ["But seriously, he really should", "be buying some gloves."]],
 		];
 		
