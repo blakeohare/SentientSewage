@@ -27,7 +27,7 @@ class IntroScene : AbstractScene {
 				"  foosball table in the breakroom since", 
 				"  he actually lives one town over and has no", 
 				"  vested interest in the local water quality."]],
-			[null, 'VAT', ["But seriously, he really should", "be buying some gloves."]],
+			[null, 'VAT+BIGCARL+BRICK', ["But seriously, he really should", "be buying some gloves."]],
 		];
 		
 		this.block_input_on = ['throw_demo', 'deflect_demo', 'grow'];
@@ -47,6 +47,7 @@ class IntroScene : AbstractScene {
 		this.page_id = null;
 		this.throw_demo_shrink = -1;
 		this.redness = 0;
+		this.smoke = [];
 	}
 	
 	function update(events) {
@@ -136,6 +137,7 @@ class IntroScene : AbstractScene {
 							this.brick = null;
 							this.carl = null;
 							this.force_next_page = true;
+							this.fluid.active_tile_x = null;
 						}
 					}
 					
@@ -180,6 +182,23 @@ class IntroScene : AbstractScene {
 					break;
 				case 'BRICK':
 					$gfx_draw_ellipse(295, 210, 70, 70, 255, 255, 255, 255);
+					
+					if (this.smoke.length < 20) {
+						this.smoke.add([$floor(295 + $random() * 70), 210, 20]);
+					}
+					new_smoke = [];
+					for (smoke : this.smoke) {
+						x = smoke[0];
+						y = smoke[1];
+						r = smoke[2] / 20.0;
+						$gfx_draw_rectangle(x, y, 8, 8, 180, 255, 140, $floor(255 * r));
+						smoke[1] -= 4;
+						smoke[2] -= 1;
+						if (smoke[2] > 0) {
+							new_smoke.add(smoke);
+						}
+					}
+					this.smoke = new_smoke;
 					break;
 				default:
 					break;
