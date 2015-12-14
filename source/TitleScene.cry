@@ -39,7 +39,7 @@ class TitleScene : AbstractScene {
 								this.switch_scene(new FadeTransitionScene(this, new IntroScene()));
 								break;
 							case 'about':
-								$print('about');
+								this.switch_scene(new FadeTransitionScene(this, new AboutScene()));
 								break;
 							case 'easy':
 							case 'medium':
@@ -48,9 +48,6 @@ class TitleScene : AbstractScene {
 								if (SAVE_STATE.is_level_unlocked(this.active_hover)) {
 									this.switch_scene(new FadeTransitionScene(this, new PlayScene(this.active_hover)));
 								}
-								break;
-							case 'crayon':
-								$launch_browser('http://crayonlang.org');
 								break;
 							default:
 								break;
@@ -125,10 +122,6 @@ class TitleScene : AbstractScene {
 		xy = FONT.render('About', x, y, 'L');
 		if (record_bounds) bounds['about'] = [x, y, xy[0], xy[1]];
 		
-		x = GAME_WIDTH - 140;
-		y = GAME_HEIGHT - 20 + this.get_bounce('crayon') / 2;
-		xy = FONT.render("Written in Crayon!", x, y, 'S');
-		if (record_bounds) bounds['crayon'] = [x, y, xy[0], xy[1]];
 		
 		if (record_bounds) {
 			this.bounds = bounds;

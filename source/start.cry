@@ -10,6 +10,7 @@ import 'Object.cry';
 import 'AbstractScene.cry';
 import 'ImageLibrary.cry';
 
+import 'AboutScene.cry';
 import 'Brick.cry';
 import 'FadeTransitionScene.cry';
 import 'FluidSurface.cry';

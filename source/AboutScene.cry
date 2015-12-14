@@ -1,0 +1,30 @@
+class AboutScene : AbstractScene {
+	constructor() : base() {
+	}
+	
+	function update(events) {
+		for (event : events) {
+			if (event.type == 'mouseleftdown') {
+				this.switch_scene(new FadeTransitionScene(this, new TitleScene()));
+			}
+		}
+	}
+	
+	function render(rc) {
+		blue = [0, 80, 255];
+		green = [100, 200, 30];
+		
+		ratio = $abs(((4 * rc) % 500) - 250) / 250.0;
+		antiratio = 1.0 - ratio;
+		r = $floor(blue[0] * ratio + green[0] * antiratio);
+		g = $floor(blue[1] * ratio + green[1] * antiratio);
+		b = $floor(blue[2] * ratio + green[2] * antiratio);
+		
+		$gfx_fill_screen(r, g, b);
+		
+		xy = FONT.render("Sentient Sewage!", 10, 10, 'XL');
+		xy = FONT.render("Written by Blake O'Hare (blakeohare.com)", 70, xy[1] + 80, 'L');
+		xy = FONT.render("Written in Crayon (crayonlang.org)", 70, xy[1] + 80, 'L');
+		xy = FONT.render("Written for Ludum Dare #34 (ludumdare.com)", 70, xy[1] + 80, 'L');
+	}
+}
