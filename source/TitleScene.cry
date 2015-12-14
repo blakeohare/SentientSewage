@@ -36,7 +36,7 @@ class TitleScene : AbstractScene {
 					if (this.active_hover != null) {
 						switch (this.active_hover) {
 							case 'intro':
-								$print('intro');
+								this.switch_scene(new FadeTransitionScene(this, new IntroScene()));
 								break;
 							case 'about':
 								$print('about');

@@ -1,0 +1,196 @@
+class IntroScene : AbstractScene {
+	constructor() : base() {
+		this.pages = [
+			[null, 'VAT', ["This is you"]],
+			[null, 'VAT', ["You are a vat of sludgey water at the", "municipal water treatment facility."]],
+			[null, 'VAT+BIGCARL', ["This is Crazy-Hair Carl."]],
+			[null, 'VAT+BIGCARL', ["He works for Municipal Water Inc."]],
+			[null, 'VAT+BIGCARL+BRICK', [
+				"His job is to throw blocks of chlorine", 
+				"into the vat to make it safe to drink."]],
+			[null, 'VAT+BIGCARL+BRICK', ["Because that's how water treatment works.", "in my head."]],
+			[null, 'VAT+BIGCARL+BRICK', ["He should really get a pair of gloves."]],
+			[null, 'VAT+BIGCARL+BRICK', ["Anywho..."]],
+			['throw_demo', 'VAT', []],
+			['demo_over', 'VAT', ["If chlorine falls in, you shrink."]],
+			[null, 'VAT', ["You can stop this by tapping the water", "surface to extend your WATERY PSEUDOPOD", "to deflect the chlorine blocks."]],
+			['deflect_demo', 'VAT', []],
+			[null, 'VAT', ["If you shrink below 1 meter, you ", "lose consciousness."]],
+			[null, 'VAT', ["That's bad."]],
+			[null, 'VAT', ["If you can stay chlorine free, you grow", "your sludge back."]],
+			['grow', 'VAT', []],
+			[null, 'VAT', ["If you manage to grow to 6 meters, you", "can LEAK TO FREEDOM!"]],
+			[null, 'VAT+BIGCARL+BRICK', ["Don't worry about Carl though."]],
+			[null, 'VAT+BIGCARL+BRICK', [
+				"  He can use this to justify a budget increase", 
+				"  which he was planning on spending on a ", 
+				"  foosball table in the breakroom since", 
+				"  he actually lives one town over and has no", 
+				"  vested interest in the local water quality."]],
+			[null, 'VAT', ["But seriously, he really should", "be buying some gloves."]],
+		];
+		
+		this.block_input_on = ['throw_demo', 'deflect_demo', 'grow'];
+		
+		this.current_index = 0;
+		
+		this.fluid = new FluidSurface(9, 9);
+		this.fluid.level  = 4.28;
+		
+		this.per_page_counter = 0;
+		
+		this.deflected = false;
+		this.carl = null;
+		this.brick = null;
+		this.halt_countdown = -1;
+		this.force_next_page = false;
+		this.page_id = null;
+		this.throw_demo_shrink = -1;
+		this.redness = 0;
+	}
+	
+	function update(events) {
+		this.halt_countdown--;
+		old_id = this.page_id;
+		
+		go_to_next = this.force_next_page;
+		this.force_next_page = false;
+		for (event : events) {
+			if (event.type == 'mouseleftdown') {
+				if (old_id == null || !this.block_input_on.contains(old_id)) {
+					go_to_next = true;
+				}
+				break;
+			}
+		}
+		
+		if (go_to_next) {
+			this.current_index++;
+			this.per_page_counter = 0;
+		}
+		
+		if (this.current_index >= this.pages.length) {
+			this.switch_scene(new FadeTransitionScene(this, new TitleScene()));
+			this.page_id = null;
+		} else {
+			this.page_id = this.pages[this.current_index][0];
+		}
+		
+		if (this.page_id != null) {
+			if (old_id != this.page_id) {
+				switch (this.page_id) {
+					case 'throw_demo':
+						this.carl = new Brick(0.001, 4, 6, 5, 5, this.fluid.level, 1.0);
+						break;
+					case 'demo_over':
+						this.carl = null;
+						break;
+					case 'deflect_demo':
+						this.carl = new Brick(0.001, 4, 6, 5, 3, this.fluid.level, 1.0);
+						break;
+						
+				}
+			}
+			
+			switch (this.page_id) {
+				case 'throw_demo':
+					this.throw_demo_shrink--;
+					this.carl.carl_update();
+					if (this.carl.carl_countdown == 0) {
+						this.brick = this.carl;
+					}
+					
+					if (this.brick != null) {
+						this.brick.update(this.fluid, this);
+						
+						if (this.brick.dead) {
+							this.throw_demo_shrink = 30;
+							this.brick = null;
+						}
+					}
+					
+					if (this.throw_demo_shrink > 0) {
+						this.fluid.level -= .05;
+						this.redness = this.throw_demo_shrink / 30.0;
+					} else if (this.throw_demo_shrink == 0) {
+						this.force_next_page = true;
+					}
+					
+					break;
+				case 'deflect_demo':
+					this.carl.carl_update();
+					this.fluid.set_active_tile(5, 4, false, 1.0);
+					if (this.carl.carl_countdown == 0) {
+						this.brick = this.carl;
+					}
+					
+					if (this.brick != null) {
+						this.brick.update(this.fluid, this);
+						if (this.brick.z - 2 < this.fluid.level) {
+							if (!this.deflected) {
+								this.fluid.set_active_tile(5, 4, true, 1.0);
+								this.deflected = true;
+							}
+						}
+						if (this.brick.dead) {
+							this.brick = null;
+							this.carl = null;
+							this.force_next_page = true;
+						}
+					}
+					
+					break;
+					
+				case 'grow':
+					this.fluid.level += .03;
+					if (this.fluid.level > 6) {
+						this.fluid.level = 6.0;
+						this.force_next_page = true;
+					}
+					break;
+			}
+		}
+		
+		this.fluid.update();
+		this.per_page_counter++;
+	}
+	
+	function render(rc) {
+		index = this.current_index;
+		if (this.current_index >= this.pages.length) {
+			index = this.pages.length - 1;
+		}
+		
+		page = this.pages[index];
+		
+		visuals = page[1];
+		lines = page[2];
+		
+		for (visual : visuals.split('+')) {
+			switch (visual) {
+				case 'VAT':
+					carls = this.carl == null ? [] : [this.carl];
+					bricks = this.brick == null ? [] : [this.brick];
+					this.fluid.update_ripple(rc);
+					this.fluid.render(rc, GAME_WIDTH / 2, GAME_HEIGHT / 2, bricks, carls, this.redness);
+					break;
+				case 'BIGCARL':
+					carl = IMAGES.get_by_scale('carl1.png', 4);
+					$gfx_blit_image(carl, 10, GAME_HEIGHT / 2 - carl.height / 2);
+					break;
+				case 'BRICK':
+					$gfx_draw_ellipse(295, 210, 70, 70, 255, 255, 255, 255);
+					break;
+				default:
+					break;
+			}
+		}
+		
+		x = GAME_WIDTH / 3;
+		y = GAME_HEIGHT / 10;
+		for (line : lines) {
+			xy = FONT.render(line,  x, y, 'M');
+			y = xy[1] + 10;
+		}
+	}
+}
