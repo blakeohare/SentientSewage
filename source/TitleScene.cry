@@ -1,10 +1,13 @@
+import Game;
+import GFX;
+import Math;
 
 class TitleScene : AbstractScene {
-	constructor() : base() {
-		this.bounds = null;
-		this.active_hover = null;
-		this.my_rc = 0;
-	}
+	field bounds;
+	field active_hover;
+	field my_rc = 0;
+	
+	constructor() : base() { }
 	
 	function hit_test(x, y) {
 		if (this.bounds == null) return null;
@@ -20,14 +23,14 @@ class TitleScene : AbstractScene {
 	function update(events) {
 		for (event : events) {
 			switch (event.type) {
-				case 'mousemove':
+				case EventType.MOUSE_MOVE:
 					old = this.active_hover;
 					this.active_hover = this.hit_test(event.x, event.y);
 					if (this.active_hover != old) {
 						this.my_rc = 0;
 					}
 					break;
-				case 'mouseleftdown':
+				case EventType.MOUSE_LEFT_DOWN:
 					old = this.active_hover;
 					this.active_hover = this.hit_test(event.x, event.y);
 					if (this.active_hover != old) {
@@ -45,7 +48,7 @@ class TitleScene : AbstractScene {
 							case 'medium':
 							case 'hard':
 							case 'insane':
-								if (SAVE_STATE.is_level_unlocked(this.active_hover)) {
+								if (SaveState.is_level_unlocked(this.active_hover)) {
 									this.switch_scene(new FadeTransitionScene(this, new PlayScene(this.active_hover)));
 								}
 								break;
@@ -60,7 +63,7 @@ class TitleScene : AbstractScene {
 	
 	function get_bounce(item) {
 		if (item == this.active_hover && this.bounds != null)
-			return -$floor(8 * $abs($sin(this.my_rc * TWO_PI / FPS)));
+			return -Math.floor(8 * Math.abs(Math.sin(this.my_rc * TWO_PI / FPS)));
 		return 0;
 	}
 	
@@ -69,7 +72,7 @@ class TitleScene : AbstractScene {
 		record_bounds = this.bounds == null;
 		bounds = {};
 		
-		FONT.render('SENTIENT SEWAGE', 100, 20, 'XL');
+		FontEngine.render('SENTIENT SEWAGE', 100, 20, 'XL');
 		
 		images = [
 			'easy',
@@ -85,41 +88,41 @@ class TitleScene : AbstractScene {
 			'Insane',
 		];
 		
-		lock = IMAGES.get('locked.png');
+		lock = ImageLibrary.get('locked.png');
 		
 		y = GAME_HEIGHT / 2;
 		for (i = 1; i < 5; ++i) {
 			x = GAME_WIDTH * i / 5;
 			difficulty = images[i - 1];
-			img = IMAGES.get(difficulty + '.png');
+			img = ImageLibrary.get(difficulty + '.png');
 			if (i == 1) {
 				x -= 30;
 			}
-			$gfx_blit_image(img, x - img.width / 2, y - img.height / 2);
+			img.draw(x - img.width / 2, y - img.height / 2);
 			
 			if (record_bounds) {
 				bounds[difficulty] = [x - 90, y - 100, x + 90, y + 100];
 			}
 			
-			available = SAVE_STATE.is_level_unlocked(difficulty);
+			available = SaveState.is_level_unlocked(difficulty);
 			
 			if (!available) {
-				$gfx_draw_rectangle(x - 90, y - 100, 180, 200, 180, 180, 180, 200);
-				$gfx_blit_image(lock, x - lock.width / 2, y - lock.height / 2);
+				GFX.Draw.rectangle(x - 90, y - 100, 180, 200, 180, 180, 180, 200);
+				lock.draw(x - lock.width / 2, y - lock.height / 2);
 			}
 			
-			FONT.render(titles[i - 1], x - 50, y + 60 + this.get_bounce(difficulty), 'M');
+			FontEngine.render(titles[i - 1], x - 50, y + 60 + this.get_bounce(difficulty), 'M');
 		}
 		
 		base_y = GAME_HEIGHT * 4 / 5;
 		y = base_y + this.get_bounce('intro');
 		x = GAME_WIDTH / 4 - 40;
-		xy = FONT.render('Introduction', x, y, 'L');
+		xy = FontEngine.render('Introduction', x, y, 'L');
 		if (record_bounds) bounds['intro'] = [x, y, xy[0], xy[1]];
 		
 		x = 3 * GAME_WIDTH / 4 - 40;
 		y = base_y + this.get_bounce('about');
-		xy = FONT.render('About', x, y, 'L');
+		xy = FontEngine.render('About', x, y, 'L');
 		if (record_bounds) bounds['about'] = [x, y, xy[0], xy[1]];
 		
 		

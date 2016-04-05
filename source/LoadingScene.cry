@@ -1,3 +1,6 @@
+import GFX;
+import Math;
+
 enum LoadingPhase {
 	START,
 	FAKE_PAD_START,
@@ -7,20 +10,21 @@ enum LoadingPhase {
 }
 
 class LoadingScene : AbstractScene {
-	constructor() : base() {
-		this.counter = 0;
-		this.phase_counter = 0;
-		this.progress = 0.0;
-		this.phase = LoadingPhase.START;
-		this.last_progress = 0.0;
-	}
+	field counter = 0;
+	field phase_counter = 0;
+	field progress = 0.0;
+	field phase = LoadingPhase.START;
+	field last_progress = 0.0;
+	field loader;
+	
+	constructor() : base() { }
 	
 	function update(events) {
 		switch (this.phase) {
 			case LoadingPhase.START:
 				this.phase = LoadingPhase.FAKE_PAD_START;
 				this.phase_counter = -1;
-				$gfx_image_sheet_load('everything');
+				this.loader = GFX.ImageSheetLoader.fromIds('everything');
 				break;
 			case LoadingPhase.FAKE_PAD_START:
 				this.progress = this.phase_counter / 100.0;
@@ -30,12 +34,12 @@ class LoadingScene : AbstractScene {
 				}
 				break;
 			case LoadingPhase.LOADING:
-				if ($gfx_image_sheet_loaded('everything')) {
+				if (this.loader.isDone()) {
 					this.progress = 1.0;
 					this.phase = LoadingPhase.FAKE_PAD_END;
 					this.phase_counter = -1;
 				} else {
-					this.progress = $gfx_image_sheet_load_progress('everything') * .6 + .2;
+					this.progress = this.loader.getProgress() * .6 + .2;
 				}
 				break;
 			case LoadingPhase.FAKE_PAD_END:
@@ -73,31 +77,31 @@ class LoadingScene : AbstractScene {
 		bottom = GAME_HEIGHT * 7 / 8;
 		height = bottom - top;
 		
-		$gfx_draw_rectangle(left - 8, top - 8, width + 16, height + 16, 128, 128, 128, 255);
+		GFX.Draw.rectangle(left - 8, top - 8, width + 16, height + 16, 128, 128, 128);
 		
 		for (i = 0; i <= 20; ++i) {
-			y = top + $floor(height * i / 20.0);
+			y = top + Math.floor(height * i / 20.0);
 			w = i % 2 == 0 ? (width / 2) : (width / 4);
-			$gfx_draw_rectangle(right - w, y, w, 2, 200, 180, 120, 255);
+			GFX.Draw.rectangle(right - w, y, w, 2, 200, 180, 120);
 		}
 		
 		blue = [0, 100, 255];
 		green = [100, 200, 50];
 		
 		progress = this.last_progress;
-		sludge_height = $floor(progress * height);
+		sludge_height = Math.floor(progress * height);
 		antiprogress = 1 - progress;
 		rgb = [
-			$floor(blue[0] * antiprogress + green[0] * progress),
-			$floor(blue[1] * antiprogress + green[1] * progress),
-			$floor(blue[2] * antiprogress + green[2] * progress),
+			Math.floor(blue[0] * antiprogress + green[0] * progress),
+			Math.floor(blue[1] * antiprogress + green[1] * progress),
+			Math.floor(blue[2] * antiprogress + green[2] * progress),
 		];
 		
 		x = left;
 		ratios = [.2, .4, .6, 1, .6, .4, .2];
 		widths = [.1, .1, .1, .4, .1, .1, .1];
 		for (i = 0; i <= 6; ++i) {
-			w = $floor(width * widths[i]);
+			w = Math.floor(width * widths[i]);
 			r = rgb[0];
 			g = rgb[1];
 			b = rgb[2];
@@ -108,16 +112,16 @@ class LoadingScene : AbstractScene {
 			}
 			
 			ratio = ratios[i];
-			r = $floor(r * ratio);
-			g = $floor(g * ratio);
-			b = $floor(b * ratio);
+			r = Math.floor(r * ratio);
+			g = Math.floor(g * ratio);
+			b = Math.floor(b * ratio);
 		
 			if (i > 3) {
 				r = 255 - r;
 				g = 255 - g;
 				b = 255 - b;
 			}
-			$gfx_draw_rectangle(x, bottom - sludge_height, w, sludge_height, r, g, b, 200);
+			GFX.Draw.rectangle(x, bottom - sludge_height, w, sludge_height, r, g, b, 200);
 			x += w;
 		}
 	}

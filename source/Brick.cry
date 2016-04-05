@@ -1,9 +1,23 @@
-
-GRAVITY = -.025;
+const GRAVITY = -.025;
 
 // The brick sprite both represents the chlorine brick and Crazy-Hair Carl. 
 
 class Brick {
+	
+	field x;
+	field y;
+	field z;
+	field vx;
+	field vy;
+	field vz;
+	
+	field dead = false;
+	field hit_water = false;
+	field immunity_countdown = -1;
+	field carl_countdown = 15; // starts at 15, throws at 0, disappears at -15. 
+	field carl_x;
+	field carl_y;
+	
 	constructor(start_x, start_y, start_z, target_x, target_y, water_surface_z, velocity_ratio) {
 		this.x = start_x;
 		this.y = start_y;
@@ -20,10 +34,6 @@ class Brick {
 		this.vx = (target_x - this.x) / t;
 		this.vy = (target_y - this.y) / t;
 		
-		this.dead = false;
-		this.hit_water = false;
-		this.immunity_countdown = -1;
-		this.carl_countdown = 15; // starts at 15, throws at 0, disappears at -15. 
 		this.carl_x = this.x;
 		this.carl_y = this.y;
 	}
@@ -54,7 +64,6 @@ class Brick {
 		
 		z = fluid.get_z_at(this.x, this.y);
 		if (z > this.z) {
-			
 			vect = fluid.get_action_vector_at(this.x, this.y);
 			
 			if (vect != null) {
@@ -72,6 +81,5 @@ class Brick {
 				scene.halt_counter = 30;
 			}
 		}
-		
 	}
 }

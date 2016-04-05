@@ -1,25 +1,43 @@
-
-NEIGHBORS = [];
-for (dx = -3; dx <= 2; ++dx) {
-	for (dy = -3; dy <= 2; ++dy) {
-		mdx = dx;
-		mdy = dy;
-		if (mdx < 0) mdx += 1;
-		if (mdy < 0) mdy += 1;
-		dist = (mdx ** 2 + mdy ** 2) ** .5;
-		value = 2.7182818 ** (-dist);
-		if (value > 1) value = 1;
-		if (value > .5) value = (value - .5) * .5 + .5;
-		
-		// directional vector
-		vx = dx + .5;
-		vy = dy + .5;
-		
-		NEIGHBORS.add([dx, dy, value * 1.42, [vx, vy]]);
-	}
-}
+import GFX;
+import Math;
 
 class FluidSurface {
+
+	static field NEIGHBORS = [];
+	static constructor() {
+		for (dx = -3; dx <= 2; ++dx) {
+			for (dy = -3; dy <= 2; ++dy) {
+				mdx = dx;
+				mdy = dy;
+				if (mdx < 0) mdx += 1;
+				if (mdy < 0) mdy += 1;
+				dist = (mdx ** 2 + mdy ** 2) ** .5;
+				value = Math.E ** (-dist);
+				if (value > 1) value = 1;
+				if (value > .5) value = (value - .5) * .5 + .5;
+				
+				// directional vector
+				vx = dx + .5;
+				vy = dy + .5;
+				
+				FluidSurface.NEIGHBORS.add([dx, dy, value * 1.42, [vx, vy]]);
+			}
+		}
+	}
+	
+	field width;
+	field height;
+	field action_height;
+	field action_cooldown;
+	field action_severity;
+	field action_vector;
+	field ripple;
+	field active_tile_x;
+	field active_tile_y;
+	field level = 2.0;
+	field max_level = 6;
+	field redness;
+
 	constructor(width, height) {
 		this.width = width;
 		this.height = height;
@@ -29,12 +47,6 @@ class FluidSurface {
 		this.action_severity = [0] * (width * height);
 		this.action_vector = [[0, 0]] * (width * height);
 		this.ripple = [0.0] * (width * height);
-		
-		this.active_tile_x = null;
-		this.active_tile_y = null;
-		
-		this.level = 2.0;
-		this.max_level = 6;
 	}
 	
 	function set_active_tile(x, y, is_click, decay_ratio) {
@@ -47,13 +59,13 @@ class FluidSurface {
 			if (is_click) {
 				index = x + y * this.width;
 				
-				for (neighbor : NEIGHBORS) {
+				for (neighbor : FluidSurface.NEIGHBORS) {
 					nx = neighbor[0] + x;
 					ny = neighbor[1] + y;
 					if (nx >= 0 && nx < this.width && ny >= 0 && ny < this.height) {
 						index = nx + ny * this.width;
 						this.action_severity[index] = neighbor[2] * decay_ratio;
-						this.action_cooldown[index] = $floor(7 / decay_ratio);
+						this.action_cooldown[index] = Math.floor(7 / decay_ratio);
 						this.action_vector[index] = neighbor[3];
 					}
 				}
@@ -100,15 +112,15 @@ class FluidSurface {
 				
 				dx = x - pt1x;
 				dy = y - pt1y;
-				func1 = $cos(.1 * rc + (dx ** 2 + dy ** 2) ** .5) * .1;
+				func1 = Math.cos(.1 * rc + (dx ** 2 + dy ** 2) ** .5) * .1;
 				
 				dx = x - pt2x;
 				dy = y - pt2y;
-				func2 = $cos(.05 * rc + (dx ** 2 + dy ** 2) ** .5) * .1;
+				func2 = Math.cos(.05 * rc + (dx ** 2 + dy ** 2) ** .5) * .1;
 				
 				dx = x - pt3x;
 				dy = y - pt3y;
-				func3 = $cos(.15 * rc + (dx ** 2 + dy ** 2) ** .5) * .1;
+				func3 = Math.cos(.15 * rc + (dx ** 2 + dy ** 2) ** .5) * .1;
 				
 				ripple[index++] = 2 * (func1 + func2 + func3);
 			}
@@ -118,8 +130,8 @@ class FluidSurface {
 	function get_action_vector_at(x, y) {
 		if (x < 0 || y < 0 || x >= this.width - 1 || y >= this.height - 1) return null;
 		
-		col = $floor(x);
-		row = $floor(y);
+		col = Math.floor(x);
+		row = Math.floor(y);
 		index = col + row * this.width;
 		
 		dx = 0.0;
@@ -144,8 +156,8 @@ class FluidSurface {
 	function get_action_severity_at(x, y) {
 		if (x < 0 || y < 0 || x >= this.width - 1 || y >= this.height - 1) return 0;
 		
-		col = $floor(x);
-		row = $floor(y);
+		col = Math.floor(x);
+		row = Math.floor(y);
 		index = col + row * this.width;
 		
 		total = 0.0;
@@ -171,13 +183,13 @@ class FluidSurface {
 			return this.level;
 		}
 		
-		col = $floor(x);
-		row = $floor(y);
+		col = Math.floor(x);
+		row = Math.floor(y);
 		
 		ux = x - col;
 		uy = y - row;
 		if (ux >= 1 || uy >= 1) {
-			$assert(false, "WAT? " + ux + ', ' + uy + ', ' + x + ', ' + y);
+			Core.assert(false, "WAT? " + ux + ', ' + uy + ', ' + x + ', ' + y);
 		}
 		index = col + row * width;
 		values = [
@@ -211,15 +223,15 @@ class FluidSurface {
 	
 	function to_screen_coordinate(x, y, z, origin_x, origin_y) {
 		return [
-			$floor(origin_x + (x - y) * 40),
-			$floor(origin_y + (x + y - z) * 20)
+			Math.floor(origin_x + (x - y) * 40),
+			Math.floor(origin_y + (x + y - z) * 20)
 		];
 	}
 	
 	function draw_quad(a, b, c, d, rgb) {
 		alpha = rgb.length == 3 ? 255 : rgb[3];
-		$gfx_draw_triangle(a[0], a[1], b[0], b[1], d[0], d[1], rgb[0], rgb[1], rgb[2], alpha);
-		$gfx_draw_triangle(a[0], a[1], c[0], c[1], d[0], d[1], rgb[0], rgb[1], rgb[2], alpha);
+		GFX.Draw.triangle(a[0], a[1], b[0], b[1], d[0], d[1], rgb[0], rgb[1], rgb[2], alpha);
+		GFX.Draw.triangle(a[0], a[1], c[0], c[1], d[0], d[1], rgb[0], rgb[1], rgb[2], alpha);
 	}
 	
 	function render(rc, origin_x, origin_y, active_bricks, carls, redness) {
@@ -339,10 +351,10 @@ class FluidSurface {
 			xy = this.to_screen_coordinate(x, y, max_height, origin_x, origin_y);
 			path = carl.carl_countdown > 0 ? 'carl1.png' : 'carl2.png';
 			img = reversed
-				? IMAGES.get_reverse(path)
-				: IMAGES.get(path);
+				? ImageLibrary.get_reverse(path)
+				: ImageLibrary.get(path);
 			
-			$gfx_blit_image(img, xy[0] - img.width / 2, xy[1] - img.height);
+			img.draw(xy[0] - img.width / 2, xy[1] - img.height);
 			// TODO: draw chlorine
 		}
 		
@@ -351,7 +363,7 @@ class FluidSurface {
 		for (level = 1; level < max_height; ++level) {
 			a = this.to_screen_coordinate(tile_width - 1, 0, level, origin_x, origin_y);
 			b = this.to_screen_coordinate(tile_width, 0, level, origin_x, origin_y);
-			$gfx_draw_line(a[0], a[1], b[0], b[1], 3, 200, 180, 120, 255);
+			GFX.Draw.line(a[0], a[1], b[0], b[1], 3, 200, 180, 120);
 		}
 		
 		
@@ -367,8 +379,8 @@ class FluidSurface {
 		
 		for (brick : active_bricks) {
 			if (!brick.dead) {
-				col = $floor(brick.x);
-				row = $floor(brick.y);
+				col = Math.floor(brick.x);
+				row = Math.floor(brick.y);
 				if (col < 0 || row < 0 || col >= this.width || row >= this.height) {
 					brick.dead = true;
 				} else {
@@ -388,7 +400,7 @@ class FluidSurface {
 		}
 		
 		deferred_shadows = [];
-		//$print(this.level);
+		//Core.print(this.level);
 		for (y = 1; y < height; ++y) {
 			index = 1 + y * width;
 			for (x = 1; x < width; ++x) {
@@ -406,7 +418,7 @@ class FluidSurface {
 				py = origin_y + (x + y) * 20 - 40; // -40 because coordinate A is in the tile behind the current index.
 				
 				if (x == this.active_tile_x && y == this.active_tile_y) {
-					v = $abs((rc * 17) % 300 - 150);
+					v = Math.abs((rc * 17) % 300 - 150);
 					r = v;
 					g = 0;
 					b = 100 + v;
@@ -416,33 +428,33 @@ class FluidSurface {
 					b = color[2];
 				}
 				
-				vertical_tilt = $arctan((az - dz));
-				tilt_left = (vertical_tilt + $arctan((az - bz))) / TWO_PI_PLUS_EPSILON;
-				tilt_right = (vertical_tilt + $arctan((cz - az))) / TWO_PI_PLUS_EPSILON;
+				vertical_tilt = Math.arctan((az - dz));
+				tilt_left = (vertical_tilt + Math.arctan((az - bz))) / TWO_PI_PLUS_EPSILON;
+				tilt_right = (vertical_tilt + Math.arctan((cz - az))) / TWO_PI_PLUS_EPSILON;
 				
 				// make it lighter
 				if (tilt_left > 0) {
 					ratio = 1 - tilt_left;
-					r1 = $floor(255 - (255 - r) * ratio);
-					g1 = $floor(255 - (255 - g) * ratio);
-					b1 = $floor(255 - (255 - b) * ratio);
+					r1 = Math.floor(255 - (255 - r) * ratio);
+					g1 = Math.floor(255 - (255 - g) * ratio);
+					b1 = Math.floor(255 - (255 - b) * ratio);
 				} else {
 					ratio = 1 + tilt_left;
-					r1 = $floor(r * ratio);
-					g1 = $floor(g * ratio);
-					b1 = $floor(b * ratio);
+					r1 = Math.floor(r * ratio);
+					g1 = Math.floor(g * ratio);
+					b1 = Math.floor(b * ratio);
 				}
 				
 				if (tilt_right > 0) {
 					ratio = (1 - tilt_right) ** 2;
-					r2 = $floor(255 - (255 - r) * ratio);
-					g2 = $floor(255 - (255 - g) * ratio);
-					b2 = $floor(255 - (255 - b) * ratio);
+					r2 = Math.floor(255 - (255 - r) * ratio);
+					g2 = Math.floor(255 - (255 - g) * ratio);
+					b2 = Math.floor(255 - (255 - b) * ratio);
 				} else {
 					ratio = (1 + tilt_left) ** 2;
-					r2 = $floor(r * ratio);
-					g2 = $floor(g * ratio);
-					b2 = $floor(b * ratio);
+					r2 = Math.floor(r * ratio);
+					g2 = Math.floor(g * ratio);
+					b2 = Math.floor(b * ratio);
 				}
 				
 				if (r1 > 255) r1 = 255;
@@ -461,16 +473,16 @@ class FluidSurface {
 				
 				// left triangle: top, left, bottom
 				// right triangle: top, right, bottom
-				$gfx_draw_triangle(
-					px, py - $floor(az * 20),
-					px - 40, py - $floor(bz * 20) + 20,
-					px, py - $floor(dz * 20) + 40,
+				GFX.Draw.triangle(
+					px, py - Math.floor(az * 20),
+					px - 40, py - Math.floor(bz * 20) + 20,
+					px, py - Math.floor(dz * 20) + 40,
 					r1, g1, b1, 160);
 					
-				$gfx_draw_triangle(
-					px, py - $floor(az * 20),
-					px + 40, py - $floor(cz * 20) + 20,
-					px, py - $floor(dz * 20) + 40,
+				GFX.Draw.triangle(
+					px, py - Math.floor(az * 20),
+					px + 40, py - Math.floor(cz * 20) + 20,
+					px, py - Math.floor(dz * 20) + 40,
 					r2, g2, b2, 160);
 			
 				
@@ -486,9 +498,9 @@ class FluidSurface {
 							deferred_shadows.add([bx, by_shadow, shadow_height]);
 						}
 						
-						$gfx_draw_ellipse(
-							$floor(bx) - 5,
-							$floor(by) - 5,
+						GFX.Draw.ellipse(
+							Math.floor(bx) - 5,
+							Math.floor(by) - 5,
 							10,
 							10, 
 							255, 255, 255, 255);
@@ -504,11 +516,11 @@ class FluidSurface {
 			y = deferred_shadow[1];
 			height = deferred_shadow[2];
 			width = 10;
-			$gfx_draw_ellipse(
-				$floor(x - width / 2),
-				$floor(y - height / 2),
+			GFX.Draw.ellipse(
+				Math.floor(x - width / 2),
+				Math.floor(y - height / 2),
 				width,
-				$floor(height),
+				Math.floor(height),
 				0, 0, 0, 160);
 		}
 		
@@ -518,12 +530,12 @@ class FluidSurface {
 		xy = this.to_screen_coordinate(this.width - 1, 0, this.level, origin_x, origin_y);
 		x = xy[0] + 8;
 		y = xy[1];
-		$gfx_draw_line(x, y, x + 20, y, 1, 255, 255, 255, 255);
-		depth = $floor(this.level * 100) / 100.0 + '';
+		GFX.Draw.line(x, y, x + 20, y, 1, 255, 255, 255, 255);
+		depth = Math.floor(this.level * 100) / 100.0 + '';
 		while (depth.length < 4) {
 			depth += '0';
 		}
-		FONT.render(depth + 'm', x + 24, y - 6, 'S');
+		FontEngine.render(depth + 'm', x + 24, y - 6, 'S');
 	}
 	
 	function get_current_color() {
@@ -537,9 +549,9 @@ class FluidSurface {
 			if (progress > 1) progress = 1.0;
 			ratio = progress;
 			antiratio = 1 - ratio;
-			r = $floor(green[0] * ratio + blue[0] * antiratio);
-			g = $floor(green[1] * ratio + blue[1] * antiratio);
-			b = $floor(green[2] * ratio + blue[2] * antiratio);
+			r = Math.floor(green[0] * ratio + blue[0] * antiratio);
+			g = Math.floor(green[1] * ratio + blue[1] * antiratio);
+			b = Math.floor(green[2] * ratio + blue[2] * antiratio);
 			
 			if (r > 255) r = 255;
 			if (g > 255) g = 255;
@@ -551,9 +563,9 @@ class FluidSurface {
 		if (this.redness == 0) return color;
 		ratio = this.redness * .7;
 		antiratio = 1.0 - ratio;
-		r = $floor(color[0] * antiratio + 255 * ratio);
-		g = $floor(color[1] * antiratio);
-		b = $floor(color[2] * antiratio + 80 * ratio);
+		r = Math.floor(color[0] * antiratio + 255 * ratio);
+		g = Math.floor(color[1] * antiratio);
+		b = Math.floor(color[2] * antiratio + 80 * ratio);
 		return [r, g, b];
 	}
 }

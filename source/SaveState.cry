@@ -1,43 +1,43 @@
-CONFIG_FILE = 'sentientsewage_data.txt';
+import FileIO;
+
+const CONFIG_FILE = 'sentientsewage_data.txt';
 
 class SaveState {
-	constructor() {
-		this.levels_unlocked = null;
-	}
+	static field levels_unlocked = null;
 	
-	function is_level_unlocked(difficulty) {
+	constructor() { }
+	
+	static function is_level_unlocked(difficulty) {
 		if (difficulty == 'easy') return true;
 		
-		if (this.levels_unlocked == null) {
-			this.levels_unlocked = {};
-			if ($user_data_path_exists(CONFIG_FILE)) {
-				data = $user_data_file_read_text(CONFIG_FILE).trim().lower();
+		if (SaveState.levels_unlocked == null) {
+			SaveState.levels_unlocked = {};
+			if (FileIO.UserData.Path.exists(CONFIG_FILE)) {
+				data = FileIO.UserData.File.readText(CONFIG_FILE).trim().lower();
 				for (item : data.split('|')) {
-					this.levels_unlocked[item.trim().lower()] = true;
+					SaveState.levels_unlocked[item.trim().lower()] = true;
 				}
 			}
 		}
-		return this.levels_unlocked.get(difficulty, false) == true;
+		return SaveState.levels_unlocked.get(difficulty, false) == true;
 	}
 	
-	function unlock(difficulty) {
-		if (!this.is_level_unlocked(difficulty)) {
-			this.levels_unlocked[difficulty] = true;
-			this._save_data();
+	static function unlock(difficulty) {
+		if (!SaveState.is_level_unlocked(difficulty)) {
+			SaveState.levels_unlocked[difficulty] = true;
+			SaveState._save_data();
 		}
 	}
 	
-	function _save_data() {
+	static function _save_data() {
 		output = [];
 		for (diff : ['medium', 'hard', 'insane']) {
-			if (this.is_level_unlocked(diff)) {
+			if (SaveState.is_level_unlocked(diff)) {
 				output.add(diff);
 			}
 		}
 		if (output.length > 0) {
-			$user_data_file_write_text(CONFIG_FILE, output.join('|'));
+			FileIO.UserData.File.writeText(CONFIG_FILE, output.join('|'));
 		}
 	}
 }
-
-SAVE_STATE = new SaveState();
