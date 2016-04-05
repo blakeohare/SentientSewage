@@ -1,49 +1,51 @@
+import GFX;
+import Math;
+
 class ImageLibrary {
-	constructor() {
-		this.images = {};
-		this.images_by_scale = {};
-		this.reversed = {};
-	}
+	static field images = {};
+	static field images_by_scale = {};
+	static field reversed = {};
 	
-	function get(path) {
-		img = this.images.get(path, null);
+	constructor() { }
+	
+	static function get(path) {
+		img = ImageLibrary.images.get(path, null);
 		if (img == null) {
-			img = this.get_by_scale(path, 1);
-			this.images[path] = img;
+			img = ImageLibrary.get_by_scale(path, 1);
+			ImageLibrary.images[path] = img;
 		}
 		return img;
 	}
 	
-	function get_reverse(path) {
-		img = this.reversed.get(path, null);
+	static function get_reverse(path) {
+		img = ImageLibrary.reversed.get(path, null);
 		if (img == null) {
-			img = this.get(path);
-			img = $gfx_flip_image(img, true, false);
-			this.reversed[path] = img;
+			img = ImageLibrary.get(path);
+			img = img.flip(true, false);
+			ImageLibrary.reversed[path] = img;
 		}
 		return img;
 	}
 	
-	function get_by_scale(path, ratio) {
-		scale = $floor(ratio * 1000);
-		lookup = this.images_by_scale.get(scale, null);
+	static function get_by_scale(path, ratio) {
+		scale = Math.floor(ratio * 1000);
+		lookup = ImageLibrary.images_by_scale.get(scale, null);
 		if (lookup == null) {
 			lookup = {};
-			this.images_by_scale[scale] = lookup;
+			ImageLibrary.images_by_scale[scale] = lookup;
 		}
 		
 		img = lookup.get(path, null);
 		if (img == null) {
 			if (scale == 1000) {
 				rpath = 'images/' + path;
-				$gfx_image_load_from_resource('t', rpath);
-				img = $gfx_image_get('t');
+				img = GFX.ImageLoader.fromResource(rpath).getImage();
 				lookup[path] = img;
 			} else {
-				img = this.get_by_scale(path, 1);
-				width = $floor(img.width * ratio);
-				height = $floor(img.height * ratio);
-				img = $gfx_image_scale(img, width, height);
+				img = ImageLibrary.get_by_scale(path, 1);
+				width = Math.floor(img.width * ratio);
+				height = Math.floor(img.height * ratio);
+				img = img.scale(width, height);
 				lookup[path] = img;
 			}
 		}
@@ -51,5 +53,3 @@ class ImageLibrary {
 		return img;
 	}
 }
-
-IMAGES = new ImageLibrary();

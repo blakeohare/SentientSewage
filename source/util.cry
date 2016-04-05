@@ -1,3 +1,4 @@
+import Random;
 
 function make_grid(width, height, default_value = null) {
 	output = [];
@@ -8,7 +9,7 @@ function make_grid(width, height, default_value = null) {
 }
 
 function get_variance_ratio(amount) {
-	return 1.0 + ($random() * 2 - 1) * amount;
+	return 1.0 + (Random.randomFloat() * 2 - 1) * amount;
 }
 
 function get_next_difficulty(diff) {

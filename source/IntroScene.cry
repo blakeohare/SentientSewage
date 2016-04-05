@@ -1,4 +1,24 @@
+import Game;
+import GFX;
+import Math;
+import Random;
+
 class IntroScene : AbstractScene {
+	field pages;
+	field block_input_on = ['throw_demo', 'deflect_demo', 'grow'];
+	field current_index = 0;
+	field fluid;
+	field per_page_counter = 0;
+	field deflected = false;
+	field carl = null;
+	field brick = null;
+	field halt_countdown = -1;
+	field force_next_page = false;
+	field page_id = null;
+	field throw_demo_shrink = -1;
+	field redness = 0;
+	field smoke = [];
+	
 	constructor() : base() {
 		this.pages = [
 			[null, 'VAT', ["This is you"]],
@@ -62,7 +82,7 @@ class IntroScene : AbstractScene {
 		go_to_next = this.force_next_page;
 		this.force_next_page = false;
 		for (event : events) {
-			if (event.type == 'mouseleftdown') {
+			if (event.type == EventType.MOUSE_LEFT_DOWN) {
 				if (old_id == null || !this.block_input_on.contains(old_id)) {
 					go_to_next = true;
 				}
@@ -94,7 +114,6 @@ class IntroScene : AbstractScene {
 					case 'deflect_demo':
 						this.carl = new Brick(0.001, 4, 6, 5, 3, this.fluid.level, 1.0);
 						break;
-						
 				}
 			}
 			
@@ -182,21 +201,21 @@ class IntroScene : AbstractScene {
 					this.fluid.render(rc, GAME_WIDTH / 2, GAME_HEIGHT / 2, bricks, carls, this.redness);
 					break;
 				case 'BIGCARL':
-					carl = IMAGES.get_by_scale('carl1.png', 4);
-					$gfx_blit_image(carl, 10, GAME_HEIGHT / 2 - carl.height / 2);
+					carl = ImageLibrary.get_by_scale('carl1.png', 4);
+					carl.draw(10, GAME_HEIGHT / 2 - carl.height / 2);
 					break;
 				case 'BRICK':
-					$gfx_draw_ellipse(295, 210, 70, 70, 255, 255, 255, 255);
+					GFX.Draw.ellipse(295, 210, 70, 70, 255, 255, 255);
 					
 					if (this.smoke.length < 20) {
-						this.smoke.add([$floor(295 + $random() * 70), 210, 20]);
+						this.smoke.add([Math.floor(295 + Random.randomFloat() * 70), 210, 20]);
 					}
 					new_smoke = [];
 					for (smoke : this.smoke) {
 						x = smoke[0];
 						y = smoke[1];
 						r = smoke[2] / 20.0;
-						$gfx_draw_rectangle(x, y, 8, 8, 180, 255, 140, $floor(255 * r));
+						GFX.Draw.rectangle(x, y, 8, 8, 180, 255, 140, Math.floor(255 * r));
 						smoke[1] -= 4;
 						smoke[2] -= 1;
 						if (smoke[2] > 0) {
@@ -213,7 +232,7 @@ class IntroScene : AbstractScene {
 		x = GAME_WIDTH / 3;
 		y = GAME_HEIGHT / 10;
 		for (line : lines) {
-			xy = FONT.render(line,  x, y, 'M');
+			xy = FontEngine.render(line,  x, y, 'M');
 			y = xy[1] + 10;
 		}
 	}

@@ -1,11 +1,18 @@
+import GFX;
+import Math;
+
 class FadeTransitionScene : AbstractScene {
+	field prev;
+	field next;
+	field bg;
+	field counter = 0;
+	field max = FPS;
+	field progress = 0;
+	
 	constructor(prev, next) : base() {
 		this.prev = prev;
 		this.next = next;
 		this.bg = prev;
-		this.counter = 0;
-		this.max = FPS;
-		this.progress = 0;
 	}
 	
 	function update(events) {
@@ -33,10 +40,10 @@ class FadeTransitionScene : AbstractScene {
 			progress = 1.0 - progress;
 		}
 		
-		opacity = $floor(255 * progress);
+		opacity = Math.floor(255 * progress);
 		if (opacity > 255) opacity = 255;
 		else if (opacity < 0) opacity = 0;
 		
-		$gfx_draw_rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0, 0, 0, opacity);
+		GFX.Draw.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0, 0, 0, opacity);
 	}
 }

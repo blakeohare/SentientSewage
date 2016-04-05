@@ -1,10 +1,14 @@
+import Game;
+import GFX;
+import Math;
+
 class AboutScene : AbstractScene {
 	constructor() : base() {
 	}
 	
 	function update(events) {
 		for (event : events) {
-			if (event.type == 'mouseleftdown') {
+			if (event.type == EventType.MOUSE_LEFT_DOWN) {
 				this.switch_scene(new FadeTransitionScene(this, new TitleScene()));
 			}
 		}
@@ -14,20 +18,20 @@ class AboutScene : AbstractScene {
 		blue = [0, 80, 255];
 		green = [100, 200, 30];
 		
-		ratio = $abs(((4 * rc) % 500) - 250) / 250.0;
+		ratio = Math.abs(((4 * rc) % 500) - 250) / 250.0;
 		antiratio = 1.0 - ratio;
-		r = $floor(blue[0] * ratio + green[0] * antiratio);
-		g = $floor(blue[1] * ratio + green[1] * antiratio);
-		b = $floor(blue[2] * ratio + green[2] * antiratio);
+		r = Math.floor(blue[0] * ratio + green[0] * antiratio);
+		g = Math.floor(blue[1] * ratio + green[1] * antiratio);
+		b = Math.floor(blue[2] * ratio + green[2] * antiratio);
 		
-		$gfx_fill_screen(r, g, b);
+		GFX.Draw.fill(r, g, b);
 		
-		xy = FONT.render("Sentient Sewage!", 10, 10, 'XL');
-		xy = FONT.render("Written by Blake O'Hare", 70, xy[1] + 60, 'L');
-		xy = FONT.render("http://blakeohare.com", 70, xy[1], 'M');
-		xy = FONT.render("Written in Crayon", 70, xy[1] + 60, 'L');
-		xy = FONT.render("http://crayonlang.org", 70, xy[1], 'M');
-		xy = FONT.render("Written for Ludum Dare #34", 70, xy[1] + 60, 'L');
-		xy = FONT.render("http://ludumdare.com)", 70, xy[1], 'M');
+		xy = FontEngine.render("Sentient Sewage!", 10, 10, 'XL');
+		xy = FontEngine.render("Written by Blake O'Hare", 70, xy[1] + 60, 'L');
+		xy = FontEngine.render("http://blakeohare.com", 70, xy[1], 'M');
+		xy = FontEngine.render("Written in Crayon", 70, xy[1] + 60, 'L');
+		xy = FontEngine.render("http://crayonlang.org", 70, xy[1], 'M');
+		xy = FontEngine.render("Written for Ludum Dare #34", 70, xy[1] + 60, 'L');
+		xy = FontEngine.render("http://ludumdare.com)", 70, xy[1], 'M');
 	}
 }

@@ -1,13 +1,15 @@
+import Resources;
+
 class FontEngine {
-	constructor() {
-		this.images = null;
-	}
+	static field images = null;
 	
-	function render(text, x, y, size) {
-		if (this.images == null) {
-			this.initialize();
+	constructor() { }
+	
+	static function render(text, x, y, size) {
+		if (FontEngine.images == null) {
+			FontEngine.initialize();
 		}
-		lookup = this.images[size];
+		lookup = FontEngine.images[size];
 		img = null;
 		space = lookup['o'].width;
 		
@@ -20,7 +22,7 @@ class FontEngine {
 					img = lookup['?'];
 				}
 				
-				$gfx_blit_image(img, x, y);
+				img.draw(x, y);
 				x += img.width + 1;
 			}
 		}
@@ -29,15 +31,15 @@ class FontEngine {
 		return [x, y + height];
 	}
 	
-	function initialize() {
-		data = $resource_read_text('images/font/lookup.txt')
+	static function initialize() {
+		data = Resources.readText('images/font/lookup.txt')
 			.trim()
 			.replace('\r\n', '\n')
 			.replace('\r', '\n')
 			.split('\n');
 		raw_file_info = {};
 		
-		this.images = {};
+		FontEngine.images = {};
 		sizes = {
 			'S': 1,
 			'M': 2,
@@ -50,14 +52,12 @@ class FontEngine {
 			for (row : data) {
 				char = row[0];
 				file = 'font/' + row[1:] + '.png';
-				img = IMAGES.get_by_scale(file, scale);
+				img = ImageLibrary.get_by_scale(file, scale);
 				lookup[char] = img;
 			}
 			
-			this.images[tshirt] = lookup;
-			this.images[tshirt.lower()] = lookup;
+			FontEngine.images[tshirt] = lookup;
+			FontEngine.images[tshirt.lower()] = lookup;
 		}
 	}
 }
-
-FONT = new FontEngine();

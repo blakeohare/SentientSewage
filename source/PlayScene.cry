@@ -1,6 +1,22 @@
-TOP_ORIGIN = [GAME_WIDTH / 2, 2 * GAME_HEIGHT / 5];
+import Math;
+import Random;
 
 class PlayScene : AbstractScene {
+
+	static field TOP_ORIGIN = [GAME_WIDTH / 2, 2 * GAME_HEIGHT / 5];
+	
+	field difficulty;
+	field fluid;
+	field active_bricks;
+	field carls;
+	field counter;
+	field last_click;
+	field last_click_coords;
+	field interval;
+	field velocity;
+	field decay;
+	field halt_counter;
+	
 	constructor(difficulty) : base() {
 		this.difficulty = difficulty;
 		this.fluid = new FluidSurface(9, 9);
@@ -32,7 +48,7 @@ class PlayScene : AbstractScene {
 				decay = 1.4;
 				break;
 			default:
-				$assert(false, '?');
+				Core.assert(false, '?');
 				break;
 		}
 		this.interval = intervals;
@@ -45,14 +61,14 @@ class PlayScene : AbstractScene {
 	function update(events) {
 		this.halt_counter--;
 		
-		origin_x = TOP_ORIGIN[0];
-		origin_y = TOP_ORIGIN[1];
+		origin_x = PlayScene.TOP_ORIGIN[0];
+		origin_y = PlayScene.TOP_ORIGIN[1];
 		for (event : events) {
 			x = event.x - origin_x;
 			y = event.y - origin_y + this.fluid.level * 20;
 			col = (x / 2.0 + y) / 40.0;
 			row = (y - x / 2.0) / 40.0;
-			is_click = event.type == 'mouseleftdown';
+			is_click = event.type == EventType.MOUSE_LEFT_DOWN;
 			ignore = false;
 			if (is_click) {
 				if (col >= 0 && row >= 0 && col < this.fluid.width && row < this.fluid.height) {
@@ -69,7 +85,7 @@ class PlayScene : AbstractScene {
 			}
 			
 			if (!ignore) {
-				this.fluid.set_active_tile($floor(col), $floor(row), is_click, this.decay);
+				this.fluid.set_active_tile(Math.floor(col), Math.floor(row), is_click, this.decay);
 			}
 		}
 		
@@ -115,21 +131,21 @@ class PlayScene : AbstractScene {
 		}
 		
 		if (this.fluid.level >= this.fluid.max_level) {
-			SAVE_STATE.unlock(get_next_difficulty(this.difficulty));
+			SaveState.unlock(get_next_difficulty(this.difficulty));
 			this.switch_scene(new WinLoseScene(this, true));
 		}
 		
 		if ((this.counter + 1) % this.interval == 0) {
 			x = 0.001;
-			y = $random() * (this.fluid.height - 4) + 1.5;
-			if ($random() < .5) {
+			y = Random.randomFloat() * (this.fluid.height - 4) + 1.5;
+			if (Random.randomFloat() < .5) {
 				t = x;
 				x = y;
 				y = t;
 			}
 			
-			target_x = $random() * (this.fluid.width - 4) + 1.5;
-			target_y = $random() * (this.fluid.height - 4) + 1.5;
+			target_x = Random.randomFloat() * (this.fluid.width - 4) + 1.5;
+			target_y = Random.randomFloat() * (this.fluid.height - 4) + 1.5;
 			
 			this.carls.add(new Brick(x, y, this.fluid.max_level + 1, target_x, target_y, this.fluid.level, this.velocity));
 		}
@@ -143,6 +159,6 @@ class PlayScene : AbstractScene {
 		if (redness > 1) redness = 1;
 		
 		this.fluid.update_ripple(rc);
-		this.fluid.render(rc, TOP_ORIGIN[0], TOP_ORIGIN[1], this.active_bricks, this.carls, redness);
+		this.fluid.render(rc, PlayScene.TOP_ORIGIN[0], PlayScene.TOP_ORIGIN[1], this.active_bricks, this.carls, redness);
 	}
 }
