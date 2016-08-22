@@ -3,31 +3,33 @@
   <source>source/</source>
   <output>output/%TARGET_NAME%</output>
 
-  <spritesheets>
+  <guidseed>com.noisyprotozoa.sentientsewage,%TARGET_NAME%</guidseed>
+
+  <imagesheets>
     <sheet id="everything">
       <prefix>images/</prefix>
     </sheet>
-  </spritesheets>
+  </imagesheets>
 
-  <target name="js_local">
-    <platform>js</platform>
-  </target>
-  
-  <target name="js_noisyprotozoa">
-    <platform>js</platform>
+  <target name="javascript_noisyprotozoa">
+    <platform>game-javascript</platform>
     <jsfileprefix>/demos/sentientsewage/</jsfileprefix>
   </target>
   
-  <target name="js_twocans">
-	<platform>js</platform>
+  <target name="javascript_twocans">
+	<platform>game-javascript</platform>
 	<jsfileprefix>/projects/sentientsewage/</jsfileprefix>
   </target>
   
-  <target name="windows">
-	<platform>csopengl</platform>
+  <target name="csharp">
+	<platform>game-csharp-opentk</platform>
+  </target>
+  
+  <target name="java">
+	<platform>game-java-awt</platform>
   </target>
   
   <target name="python">
-	<platform>python</platform>
+	<platform>game-python-pygame</platform>
   </target>
 </build>

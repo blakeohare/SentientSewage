@@ -1,4 +1,4 @@
-import GFX;
+import Graphics;
 import Math;
 
 class FluidSurface {
@@ -230,8 +230,8 @@ class FluidSurface {
 	
 	function draw_quad(a, b, c, d, rgb) {
 		alpha = rgb.length == 3 ? 255 : rgb[3];
-		GFX.Draw.triangle(a[0], a[1], b[0], b[1], d[0], d[1], rgb[0], rgb[1], rgb[2], alpha);
-		GFX.Draw.triangle(a[0], a[1], c[0], c[1], d[0], d[1], rgb[0], rgb[1], rgb[2], alpha);
+		Draw.triangle(a[0], a[1], b[0], b[1], d[0], d[1], rgb[0], rgb[1], rgb[2], alpha);
+		Draw.triangle(a[0], a[1], c[0], c[1], d[0], d[1], rgb[0], rgb[1], rgb[2], alpha);
 	}
 	
 	function render(rc, origin_x, origin_y, active_bricks, carls, redness) {
@@ -363,7 +363,7 @@ class FluidSurface {
 		for (level = 1; level < max_height; ++level) {
 			a = this.to_screen_coordinate(tile_width - 1, 0, level, origin_x, origin_y);
 			b = this.to_screen_coordinate(tile_width, 0, level, origin_x, origin_y);
-			GFX.Draw.line(a[0], a[1], b[0], b[1], 3, 200, 180, 120);
+			Draw.line(a[0], a[1], b[0], b[1], 3, 200, 180, 120);
 		}
 		
 		
@@ -473,13 +473,13 @@ class FluidSurface {
 				
 				// left triangle: top, left, bottom
 				// right triangle: top, right, bottom
-				GFX.Draw.triangle(
+				Draw.triangle(
 					px, py - Math.floor(az * 20),
 					px - 40, py - Math.floor(bz * 20) + 20,
 					px, py - Math.floor(dz * 20) + 40,
 					r1, g1, b1, 160);
 					
-				GFX.Draw.triangle(
+				Draw.triangle(
 					px, py - Math.floor(az * 20),
 					px + 40, py - Math.floor(cz * 20) + 20,
 					px, py - Math.floor(dz * 20) + 40,
@@ -498,7 +498,7 @@ class FluidSurface {
 							deferred_shadows.add([bx, by_shadow, shadow_height]);
 						}
 						
-						GFX.Draw.ellipse(
+						Draw.ellipse(
 							Math.floor(bx) - 5,
 							Math.floor(by) - 5,
 							10,
@@ -516,7 +516,7 @@ class FluidSurface {
 			y = deferred_shadow[1];
 			height = deferred_shadow[2];
 			width = 10;
-			GFX.Draw.ellipse(
+			Draw.ellipse(
 				Math.floor(x - width / 2),
 				Math.floor(y - height / 2),
 				width,
@@ -530,7 +530,7 @@ class FluidSurface {
 		xy = this.to_screen_coordinate(this.width - 1, 0, this.level, origin_x, origin_y);
 		x = xy[0] + 8;
 		y = xy[1];
-		GFX.Draw.line(x, y, x + 20, y, 1, 255, 255, 255, 255);
+		Draw.line(x, y, x + 20, y, 1, 255, 255, 255, 255);
 		depth = Math.floor(this.level * 100) / 100.0 + '';
 		while (depth.length < 4) {
 			depth += '0';

@@ -7,10 +7,10 @@ class AbstractScene {
 	}
 	
 	function update(events) {
-		Core.assert(false, "Override me!");
+		fail("Override me!");
 	}
 	
 	function render(rc) {
-		Core.assert(false, "Override me!");
+		fail("Override me!");
 	}
 }

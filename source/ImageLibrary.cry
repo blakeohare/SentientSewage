@@ -1,10 +1,12 @@
-import GFX;
+import Graphics;
+import ImageResources;
 import Math;
 
 class ImageLibrary {
 	static field images = {};
 	static field images_by_scale = {};
 	static field reversed = {};
+	static field sheet = null;
 	
 	constructor() { }
 	
@@ -39,7 +41,7 @@ class ImageLibrary {
 		if (img == null) {
 			if (scale == 1000) {
 				rpath = 'images/' + path;
-				img = GFX.ImageLoader.fromResource(rpath).getImage();
+				img = GraphicsTexture.createImage(ImageLibrary.sheet.getImage(rpath));
 				lookup[path] = img;
 			} else {
 				img = ImageLibrary.get_by_scale(path, 1);

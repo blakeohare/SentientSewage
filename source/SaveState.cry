@@ -1,4 +1,4 @@
-import FileIO;
+import UserData;
 
 const CONFIG_FILE = 'sentientsewage_data.txt';
 
@@ -12,8 +12,8 @@ class SaveState {
 		
 		if (SaveState.levels_unlocked == null) {
 			SaveState.levels_unlocked = {};
-			if (FileIO.UserData.Path.exists(CONFIG_FILE)) {
-				data = FileIO.UserData.File.readText(CONFIG_FILE).trim().lower();
+			if (UserData.fileExists(CONFIG_FILE)) {
+				data = UserData.fileReadText(CONFIG_FILE).trim().lower();
 				for (item : data.split('|')) {
 					SaveState.levels_unlocked[item.trim().lower()] = true;
 				}
@@ -37,7 +37,7 @@ class SaveState {
 			}
 		}
 		if (output.length > 0) {
-			FileIO.UserData.File.writeText(CONFIG_FILE, output.join('|'));
+			UserData.fileWriteText(CONFIG_FILE, output.join('|'));
 		}
 	}
 }

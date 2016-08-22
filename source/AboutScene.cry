@@ -1,10 +1,9 @@
 import Game;
-import GFX;
+import Graphics;
 import Math;
 
 class AboutScene : AbstractScene {
-	constructor() : base() {
-	}
+	constructor() : base() { }
 	
 	function update(events) {
 		for (event : events) {
@@ -24,7 +23,7 @@ class AboutScene : AbstractScene {
 		g = Math.floor(blue[1] * ratio + green[1] * antiratio);
 		b = Math.floor(blue[2] * ratio + green[2] * antiratio);
 		
-		GFX.Draw.fill(r, g, b);
+		Draw.fill(r, g, b);
 		
 		xy = FontEngine.render("Sentient Sewage!", 10, 10, 'XL');
 		xy = FontEngine.render("Written by Blake O'Hare", 70, xy[1] + 60, 'L');

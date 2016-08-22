@@ -1,5 +1,5 @@
 import Game;
-import GFX;
+import Graphics;
 import Math;
 
 class TitleScene : AbstractScene {
@@ -107,7 +107,7 @@ class TitleScene : AbstractScene {
 			available = SaveState.is_level_unlocked(difficulty);
 			
 			if (!available) {
-				GFX.Draw.rectangle(x - 90, y - 100, 180, 200, 180, 180, 180, 200);
+				Draw.rectangle(x - 90, y - 100, 180, 200, 180, 180, 180, 200);
 				lock.draw(x - lock.width / 2, y - lock.height / 2);
 			}
 			

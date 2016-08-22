@@ -1,5 +1,5 @@
 import Game;
-import GFX;
+import Graphics;
 import Math;
 import Random;
 
@@ -205,7 +205,7 @@ class IntroScene : AbstractScene {
 					carl.draw(10, GAME_HEIGHT / 2 - carl.height / 2);
 					break;
 				case 'BRICK':
-					GFX.Draw.ellipse(295, 210, 70, 70, 255, 255, 255);
+					Draw.ellipse(295, 210, 70, 70, 255, 255, 255);
 					
 					if (this.smoke.length < 20) {
 						this.smoke.add([Math.floor(295 + Random.randomFloat() * 70), 210, 20]);
@@ -215,7 +215,7 @@ class IntroScene : AbstractScene {
 						x = smoke[0];
 						y = smoke[1];
 						r = smoke[2] / 20.0;
-						GFX.Draw.rectangle(x, y, 8, 8, 180, 255, 140, Math.floor(255 * r));
+						Draw.rectangle(x, y, 8, 8, 180, 255, 140, Math.floor(255 * r));
 						smoke[1] -= 4;
 						smoke[2] -= 1;
 						if (smoke[2] > 0) {

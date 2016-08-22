@@ -1,4 +1,4 @@
-import GFX;
+import Graphics;
 import Math;
 
 class FadeTransitionScene : AbstractScene {
@@ -44,6 +44,6 @@ class FadeTransitionScene : AbstractScene {
 		if (opacity > 255) opacity = 255;
 		else if (opacity < 0) opacity = 0;
 		
-		GFX.Draw.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0, 0, 0, opacity);
+		Draw.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0, 0, 0, opacity);
 	}
 }

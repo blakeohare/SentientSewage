@@ -1,5 +1,5 @@
 import Game;
-import GFX;
+import Graphics;
 import Math;
 
 const FPS = 30;
@@ -39,7 +39,7 @@ function main() {
 		}
 		
 		active_scene.update(events);
-		GFX.Draw.fill(0, 0, 0);
+		Draw.fill(0, 0, 0);
 		active_scene.render(render_counter);
 		
 		render_counter++;

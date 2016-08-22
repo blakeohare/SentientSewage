@@ -1,4 +1,5 @@
-import GFX;
+import Graphics;
+import ImageResources;
 import Math;
 
 enum LoadingPhase {
@@ -24,7 +25,7 @@ class LoadingScene : AbstractScene {
 			case LoadingPhase.START:
 				this.phase = LoadingPhase.FAKE_PAD_START;
 				this.phase_counter = -1;
-				this.loader = GFX.ImageSheetLoader.fromIds('everything');
+				this.loader = ImageSheet.loadFromResourcesAsync('everything');
 				break;
 			case LoadingPhase.FAKE_PAD_START:
 				this.progress = this.phase_counter / 100.0;
@@ -38,6 +39,7 @@ class LoadingScene : AbstractScene {
 					this.progress = 1.0;
 					this.phase = LoadingPhase.FAKE_PAD_END;
 					this.phase_counter = -1;
+					ImageLibrary.sheet = this.loader;
 				} else {
 					this.progress = this.loader.getProgress() * .6 + .2;
 				}
@@ -77,12 +79,12 @@ class LoadingScene : AbstractScene {
 		bottom = GAME_HEIGHT * 7 / 8;
 		height = bottom - top;
 		
-		GFX.Draw.rectangle(left - 8, top - 8, width + 16, height + 16, 128, 128, 128);
+		Draw.rectangle(left - 8, top - 8, width + 16, height + 16, 128, 128, 128);
 		
 		for (i = 0; i <= 20; ++i) {
 			y = top + Math.floor(height * i / 20.0);
 			w = i % 2 == 0 ? (width / 2) : (width / 4);
-			GFX.Draw.rectangle(right - w, y, w, 2, 200, 180, 120);
+			Draw.rectangle(right - w, y, w, 2, 200, 180, 120);
 		}
 		
 		blue = [0, 100, 255];
@@ -121,7 +123,7 @@ class LoadingScene : AbstractScene {
 				g = 255 - g;
 				b = 255 - b;
 			}
-			GFX.Draw.rectangle(x, bottom - sludge_height, w, sludge_height, r, g, b, 200);
+			Draw.rectangle(x, bottom - sludge_height, w, sludge_height, r, g, b, 200);
 			x += w;
 		}
 	}

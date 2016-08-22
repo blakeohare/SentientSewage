@@ -1,5 +1,5 @@
 import Game;
-import GFX;
+import Graphics;
 
 class WinLoseScene : AbstractScene {
 	field bg;
@@ -27,10 +27,10 @@ class WinLoseScene : AbstractScene {
 		this.bg.render(rc);
 		
 		if (this.is_win) {
-			GFX.Draw.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 100, 200, 70, 150);
+			Draw.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 100, 200, 70, 150);
 			FontEngine.render("YOU WIN!", GAME_WIDTH / 2 - 100, GAME_HEIGHT * 2 / 5, 'XL');
 		} else {
-			GFX.Draw.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0, 80, 255, 150);
+			Draw.rectangle(0, 0, GAME_WIDTH, GAME_HEIGHT, 0, 80, 255, 150);
 			FontEngine.render("YOU LOSE!", GAME_WIDTH / 2 - 100, GAME_HEIGHT * 2 / 5, 'XL');
 		}
 	}
