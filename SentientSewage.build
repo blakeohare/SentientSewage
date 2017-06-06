@@ -12,24 +12,24 @@
   </imagesheets>
 
   <target name="javascript_noisyprotozoa">
-    <platform>game-javascript</platform>
+    <platform>javascript-app-gl</platform>
     <jsfileprefix>/demos/sentientsewage/</jsfileprefix>
   </target>
   
   <target name="javascript_twocans">
-	<platform>game-javascript</platform>
-	<jsfileprefix>/projects/sentientsewage/</jsfileprefix>
+    <platform>javascript-app-gl</platform>
+    <jsfileprefix>/projects/sentientsewage/</jsfileprefix>
   </target>
   
   <target name="csharp">
-	<platform>game-csharp-opentk</platform>
+    <platform>csharp-app</platform>
   </target>
   
   <target name="java">
-	<platform>game-java-awt</platform>
+    <platform>java-app</platform>
   </target>
   
   <target name="python">
-	<platform>game-python-pygame</platform>
+    <platform>python-app</platform>
   </target>
 </build>
