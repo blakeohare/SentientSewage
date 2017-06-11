@@ -3,6 +3,7 @@
   <source>source/</source>
   <output>output/%TARGET_NAME%</output>
 
+  <iosbundleprefix>com.noisyprotozoa</iosbundleprefix>
   <guidseed>com.noisyprotozoa.sentientsewage,%TARGET_NAME%</guidseed>
 
   <imagesheets>
@@ -31,5 +32,9 @@
   
   <target name="python">
     <platform>python-app</platform>
+  </target>
+
+  <target name="ios">
+    <platform>javascript-app-ios</platform>
   </target>
 </build>
